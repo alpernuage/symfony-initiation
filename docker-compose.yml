@@ -1,9 +1,10 @@
-version: '3'
+version: '3.8'
 
 services:
 ###> doctrine/doctrine-bundle ###
   database:
     image: postgres:${POSTGRES_VERSION:-15}-alpine
+    container_name: ${COMPOSE_PROJECT_NAME}-postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app}
       # You should definitely change the password in production
@@ -14,6 +15,30 @@ services:
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/db/data:/var/lib/postgresql/data:rw
 ###< doctrine/doctrine-bundle ###
+
+  caddy:
+    container_name: ${COMPOSE_PROJECT_NAME}-caddy
+    build:
+      dockerfile: ./devops/caddy/Dockerfile
+      context: .
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-alximy.local}
+    volumes:
+      - ./:/srv/app:ro
+      - ./devops/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./devops/caddy/certs:/usr/local/share/ca-certificates
+    restart: unless-stopped
+
+  php:
+    container_name: ${COMPOSE_PROJECT_NAME}-php
+    build:
+      dockerfile: ./devops/php/Dockerfile
+      context: .
+      args:
+        ENV: ${APP_ENV:-dev}
+    volumes:
+      - ./:/srv/app:rw,cached
+    restart: unless-stopped
 
 volumes:
 ###> doctrine/doctrine-bundle ###

@@ -1,0 +1,7 @@
+{$SERVER_NAME}
+log
+tls /usr/local/share/ca-certificates/{$SERVER_NAME}.pem /usr/local/share/ca-certificates/{$SERVER_NAME}-key.pem
+root * /srv/app/public
+php_fastcgi php:9000
+encode gzip zstd
+file_server
