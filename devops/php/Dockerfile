@@ -2,14 +2,14 @@ FROM php:8.2-fpm-alpine
 
 # persistent / runtime deps
 RUN apk add --no-cache \
-		acl \
-		fcgi \
-		file \
-		gettext \
-		git \
-		gnu-libiconv \
-		postgresql-dev \
-	;
+	acl \
+	fcgi \
+	file \
+	gettext \
+	git \
+	gnu-libiconv \
+	postgresql-dev \
+;
 
 # install gnu-libiconv and set LD_PRELOAD env to make iconv work fully on Alpine image.
 # see https://github.com/docker-library/php/issues/240#issuecomment-763112749
@@ -51,7 +51,6 @@ RUN set -eux; \
 	\
 	apk del .build-deps
 
-# Copy php conf file
 ARG ENV
 COPY ./devops/php/conf.d/php.${ENV}.ini $PHP_INI_DIR/conf.d/php.ini
 
