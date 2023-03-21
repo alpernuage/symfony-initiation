@@ -5,12 +5,23 @@ DOCKER_COMPOSE = docker compose
 EXEC = $(DOCKER_COMPOSE) exec
 PHP = $(EXEC) php
 CONSOLE = $(EXEC_PHP) bin/console
+CONTAINER_PHP = alper-initiation-php
 
 # Colors
 GREEN := $(shell tput -Txterm setaf 2)
 RED := $(shell tput -Txterm setaf 1)
 YELLOW := $(shell tput -Txterm setaf 3)
 RESET=\033[0m
+
+## —— Install dependencies ——
+.PHONY: composer-install
+composer-install: ## Install PHP dependencies
+	$(PHP) composer install
+
+.PHONY: install
+install: ## Project installation
+install: ssl build start vendor
+	echo "${YELLOW}The application is available at the url: SERVER_NAME$(RESET)";
 
 ## —— TLS certificate ——
 .PHONY: ssl
