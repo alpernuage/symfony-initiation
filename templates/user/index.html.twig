@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {% apply spaceless %}
+        <h1>Users list</h1>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.firstName }}</td>
+                    <td>{{ user.lastName }}</td>
+                    <td>{{ user.email }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <form action="{{ path('user-list') }}" method="get">
+            <select name="limit" onchange="this.form.submit()">
+                <option value="5" {% if limit == 5 %}selected{% endif %}>5</option>
+                <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
+                <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
+            </select>
+        </form>
+
+        <div class="pagination">
+            {% if current_page > 1 %}
+                <a href="{{ path('user-list', {'page': current_page - 1, 'limit': limit}) }}">Previous</a>
+            {% endif %}
+            {% for page in 1..total_pages %}
+                {% if page == current_page %}
+                    <span>{{ page }}</span>
+                {% else %}
+                    <a href="{{ path('user-list', {'page': page, 'limit': limit}) }}">{{ page }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if current_page < total_pages %}
+                <a href="{{ path('user-list', {'page': current_page + 1, 'limit': limit}) }}">Next</a>
+            {% endif %}
+        </div>
+
+    {% endapply %}
+{% endblock %}
