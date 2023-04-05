@@ -10,17 +10,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
 {
-    public function __construct(private UserRepository $userRepository)
-    {
-    }
-
     #[Route('/users', name: 'user-list', methods: ['GET'])]
-    public function index(Request $request): Response
+    public function index(Request $request, UserRepository $userRepository): Response
     {
         $limit = $request->query->getInt('limit', 5);
         $page = $request->query->getInt('page', 1);
-        $totalUsers = $this->userRepository->count([]);
-        $users = $this->userRepository->findBy([], limit: $limit, offset: ($page - 1) * $limit);
+        $totalUsers = $userRepository->count([]);
+        $users = $userRepository->findBy([], limit: $limit, offset: ($page - 1) * $limit);
 
         return $this->render('user/index.html.twig', [
             'users' => $users,
