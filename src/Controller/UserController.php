@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
 {
-    #[Route('/users', name: 'user-list', methods: ['GET'])]
+    #[Route('/users', name: 'user-list', methods: [Request::METHOD_GET])]
     public function index(Request $request, UserRepository $userRepository): Response
     {
         $limit = $request->query->getInt('limit', 5);
