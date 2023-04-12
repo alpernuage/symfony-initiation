@@ -24,7 +24,7 @@
             </tbody>
         </table>
 
-        <form action="{{ path('user-list') }}" method="get">
+        <form action="{{ path('user_list') }}" method="get">
             <select name="limit" onchange="this.form.submit()">
                 <option value="5" {% if limit == 5 %}selected{% endif %}>5</option>
                 <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
@@ -34,17 +34,17 @@
 
         <div class="pagination">
             {% if current_page > 1 %}
-                <a href="{{ path('user-list', {'page': current_page - 1, 'limit': limit}) }}">Previous</a>
+                <a href="{{ path('user_list', {'page': current_page - 1, 'limit': limit}) }}">Previous</a>
             {% endif %}
             {% for page in 1..total_pages %}
                 {% if page == current_page %}
                     <span>{{ page }}</span>
                 {% else %}
-                    <a href="{{ path('user-list', {'page': page, 'limit': limit}) }}">{{ page }}</a>
+                    <a href="{{ path('user_list', {'page': page, 'limit': limit}) }}">{{ page }}</a>
                 {% endif %}
             {% endfor %}
             {% if current_page < total_pages %}
-                <a href="{{ path('user-list', {'page': current_page + 1, 'limit': limit}) }}">Next</a>
+                <a href="{{ path('user_list', {'page': current_page + 1, 'limit': limit}) }}">Next</a>
             {% endif %}
         </div>
 
