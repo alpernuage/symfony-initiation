@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,14 @@ class UserController extends AbstractController
             'current_page' => $page,
             'total_pages' => ceil($totalUsers / $limit),
             'limit' => $limit,
+        ]);
+    }
+
+    #[Route('/user/{id}', name: 'user_show', methods: [Request::METHOD_GET])]
+    public function show(User $user): Response
+    {
+        return $this->render('user/show.html.twig', [
+            'user' => $user,
         ]);
     }
 }

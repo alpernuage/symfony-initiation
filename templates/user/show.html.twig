@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+{% block title %}User Details{% endblock %}
+{% block body %}
+    <h1>User Details</h1>
+
+    <table>
+        <tr>
+            <th>First Name</th>
+            <td>{{ user.firstName }}</td>
+        </tr>
+        <tr>
+            <th>Last Name</th>
+            <td>{{ user.lastName }}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ user.email|default('N/A') }}</td>
+        </tr>
+    </table>
+
+    <a href="{{ path('user_list') }}">Return to the user list</a>
+{% endblock %}
