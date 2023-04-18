@@ -23,11 +23,14 @@ class User
     private string $lastName;
 
     #[ORM\Column(type: Types::STRING, length: 320, nullable: true)]
-    private ?string $email = null;
+    private ?string $email;
 
-    public function __construct()
+    public function __construct(string $firstName, string $lastName, ?string $email)
     {
         $this->id = Uuid::v7();
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
+        $this->email = $email;
     }
 
     public function getId(): Uuid
@@ -64,5 +67,4 @@ class User
     {
         $this->email = $email;
     }
-
 }

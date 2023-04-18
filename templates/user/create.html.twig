@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+{% block title %}Create User{% endblock %}
+{% block body %}
+    <h1>Create User</h1>
+
+    {{ form(create_user_form) }}
+
+    <a href="{{ path('user_list') }}">Cancel and return to the user list</a>
+{% endblock %}

@@ -19,4 +19,8 @@
     </table>
 
     <a href="{{ path('user_list') }}">Return to the user list</a>
+
+    {% for message in app.flashes('success') %}
+        <div class="flash-notice">{{ message }}</div>
+    {% endfor %}
 {% endblock %}
