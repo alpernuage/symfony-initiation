@@ -14,12 +14,17 @@ class UserFixtures extends Fixture
         $faker = Factory::create('fr_FR');
 
         for ($i = 0; $i < 10; $i++) {
-            $user = new User();
-            $user->setFirstName($faker->firstName);
-            $user->setLastName($faker->lastName);
-            if($i %2 === 0) {
-                $user->setEmail($faker->safeEmail);
+            if ($i % 2 === 0) {
+                $email = ($faker->safeEmail);
+            } else {
+                $email = null;
             }
+
+            $user = new User(
+                $faker->firstName,
+                $faker->lastName,
+                $email,
+            );
 
             $manager->persist($user);
         }
