@@ -9,8 +9,7 @@ class UserControllerTest extends WebTestCase
 {
     public function testListUsers(): void
     {
-        $client = static::createClient();
-        $crawler = $client->request(Request::METHOD_GET, '/users');
+        static::createClient()->request(Request::METHOD_GET, '/users');
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
