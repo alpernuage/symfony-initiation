@@ -39,7 +39,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/user/create', name: 'user_create')]
+    #[Route('/user/create', name: 'user_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(Request $request, UserCreator $userCreator): Response
     {
         $userInput = new UserInput();
