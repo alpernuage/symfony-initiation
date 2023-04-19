@@ -95,6 +95,7 @@
         }
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^6",
         "doctrine/doctrine-fixtures-bundle": "^3.4",
         "fakerphp/faker": "^1.21",
         "phpunit/phpunit": "^9.5",
