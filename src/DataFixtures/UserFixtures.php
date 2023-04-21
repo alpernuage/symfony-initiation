@@ -12,6 +12,13 @@ class UserFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
+        $testUser = new User(
+            "TestUser",
+            "TEST",
+            "test.user@example.com",
+        );
+
+        $manager->persist($testUser);
 
         for ($i = 0; $i < 10; $i++) {
             if ($i % 2 === 0) {
