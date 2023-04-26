@@ -23,6 +23,6 @@ class UserFormType extends AbstractType
             ->add('firstName')
             ->add('lastName')
             ->add('email')
-            ->add('save', SubmitType::class, ['label' => 'Create User']);
+            ->add('save', SubmitType::class, ['label' => 'Save']);
     }
 }

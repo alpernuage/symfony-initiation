@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Domain\User\UserCreator;
+use App\Domain\User\UserEditorInterface;
 use App\Domain\User\UserInput;
 use App\Entity\User;
 use App\Form\UserFormType;
@@ -64,6 +65,34 @@ class UserController extends AbstractController
 
         return $this->render('user/create.html.twig', [
             'create_user_form' => $form,
+        ]);
+    }
+
+    #[Route('/user/edit/{id}', name: 'user_edit', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    public function edit(User $user, Request $request, UserEditorInterface $userEditor): Response
+    {
+        $userInput = UserInput::createInputForUpdate($user);
+
+        $form = $this->createForm(UserFormType::class, $userInput);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $userEditor->edit($user, $userInput);
+
+            $message = sprintf(
+                'User %s %s updated with success.',
+                $userInput->firstName,
+                $userInput->lastName
+            );
+
+            $this->addFlash('success', $message);
+
+            return $this->redirectToRoute('user_show', ['id' => $user->getId()]);
+        }
+
+        return $this->render('user/edit.html.twig', [
+            'edit_user_form' => $form,
         ]);
     }
 }

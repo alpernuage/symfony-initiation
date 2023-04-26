@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+{% block title %}Edit User{% endblock %}
+{% block body %}
+    <h1>Edit User</h1>
+
+    {{ form(edit_user_form) }}
+
+    <a href="{{ path('user_list') }}">Cancel and return to the user list</a>
+{% endblock %}
