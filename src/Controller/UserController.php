@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Domain\User\UserCreator;
+use App\Domain\User\UserCreatorInterface;
 use App\Domain\User\UserEditorInterface;
 use App\Domain\User\UserInput;
 use App\Entity\User;
@@ -41,7 +41,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/create', name: 'user_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function create(Request $request, UserCreator $userCreator): Response
+    public function create(Request $request, UserCreatorInterface $userCreator): Response
     {
         $userInput = new UserInput();
 
@@ -50,7 +50,7 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $user = $userCreator->save($userInput);
+            $user = $userCreator->create($userInput);
 
             $message = sprintf(
                 'New user %s %s created with success.',

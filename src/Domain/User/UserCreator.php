@@ -5,13 +5,13 @@ namespace App\Domain\User;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
-class UserCreator
+class UserCreator implements UserCreatorInterface
 {
     public function __construct(private EntityManagerInterface $entityManager)
     {
     }
 
-    public function save(UserInput $userInput): User
+    public function create(UserInput $userInput): User
     {
         $user = $this->createUserFromDTO($userInput);
 
