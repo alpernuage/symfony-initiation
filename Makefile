@@ -4,7 +4,7 @@ export
 DOCKER_COMPOSE = docker compose
 EXEC = $(DOCKER_COMPOSE) exec
 PHP = $(EXEC) php
-CONSOLE = $(EXEC_PHP) bin/console
+CONSOLE = $(PHP) bin/console
 CONTAINER_PHP = alper-initiation-php
 
 # Colors
@@ -86,6 +86,21 @@ down: ## Stops containers
 .PHONY: reset
 reset: ## Stop and start a fresh install of the project
 reset: kill down build start
+
+## —— Testing ——
+.PHONY: test-database
+test-database:
+	$(CONSOLE) doctrine:database:drop --force --env=test || true
+	$(CONSOLE) doctrine:database:create --env=test
+	$(CONSOLE) doctrine:migrations:migrate -n --env=test
+
+.PHONY: test-fixtures
+test-fixtures: test-database
+	$(CONSOLE) doctrine:fixtures:load -n --env=test
+
+.PHONY: test
+test:
+	$(PHP) vendor/bin/simple-phpunit
 
 .DEFAULT_GOAL := help
 .PHONY: help
