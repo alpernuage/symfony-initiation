@@ -45,7 +45,7 @@ class UserControllerTest extends WebTestCase
         // When the user submits the create user form with valid data
         $client->request('GET', '/user/create');
 
-        $client->submitForm('Create User', [
+        $client->submitForm('Save', [
             'user_form[firstName]' => 'Alper',
             'user_form[lastName]' => 'AKBULUT',
             'user_form[email]' => 'alper.akbulut@alximy.io',
@@ -69,7 +69,7 @@ class UserControllerTest extends WebTestCase
         $client->request('GET', '/user/create');
 
         // When the user submits the create user form with INVALID data
-        $client->submitForm('Create User', [
+        $client->submitForm('Save', [
             'user_form[firstName]' => 'Alper',
             'user_form[lastName]' => 'AKBULUT',
             'user_form[email]' => 'invalid-email@test',
@@ -89,7 +89,7 @@ class UserControllerTest extends WebTestCase
         $client->request('GET', '/user/create');
 
         // When the user submits the create user form with TOO LONG data
-        $client->submitForm('Create User', [
+        $client->submitForm('Save', [
             'user_form[firstName]' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel nisi sit amet lacus pulvinar ullamcorper. Etiam neque orci, feugiat nec augue a, dapibus eleifend ante. Nam congue, tellus in hendrerit cursus, lacus justo iaculis sapien, sit amet tempor elit erat in ex. Cras a ipsum sit amet fusce.',
             'user_form[lastName]' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel nisi sit amet lacus pulvinar ullamcorper. Etiam neque orci, feugiat nec augue a, dapibus eleifend ante. Nam congue, tellus in hendrerit cursus, lacus justo iaculis sapien, sit amet tempor elit erat in ex. Cras a ipsum sit amet fusce.',
             'user_form[email]' => 'valid-email@test.com',
@@ -99,6 +99,7 @@ class UserControllerTest extends WebTestCase
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertSelectorTextContains('h1', 'Create User');
         $this->assertSelectorTextContains('ul li', 'This value is too long. It should have 255 characters or less.');
+    }
 
     public function testShowUser(): void
     {
