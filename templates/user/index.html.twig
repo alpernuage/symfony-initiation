@@ -27,6 +27,10 @@
                     <td>{{ user.lastName }}</td>
                     <td>{{ user.email }}</td>
                 </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">No User found</td>
+                </tr>
             {% endfor %}
             </tbody>
         </table>
@@ -39,21 +43,23 @@
             </select>
         </form>
 
-        <div class="pagination">
-            {% if current_page > 1 %}
-                <a href="{{ path('user_list', {'page': current_page - 1, 'limit': limit}) }}">Previous</a>
-            {% endif %}
-            {% for page in 1..total_pages %}
-                {% if page == current_page %}
-                    <span>{{ page }}</span>
-                {% else %}
-                    <a href="{{ path('user_list', {'page': page, 'limit': limit}) }}">{{ page }}</a>
+        {% if total_pages > 1 %}
+            <div class="pagination">
+                {% if current_page > 1 %}
+                    <a href="{{ path('user_list', {'page': current_page - 1, 'limit': limit}) }}">Previous</a>
                 {% endif %}
-            {% endfor %}
-            {% if current_page < total_pages %}
-                <a href="{{ path('user_list', {'page': current_page + 1, 'limit': limit}) }}">Next</a>
-            {% endif %}
-        </div>
+                {% for page in 1..total_pages %}
+                    {% if page == current_page %}
+                        <span>{{ page }}</span>
+                    {% else %}
+                        <a href="{{ path('user_list', {'page': page, 'limit': limit}) }}">{{ page }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if current_page < total_pages %}
+                    <a href="{{ path('user_list', {'page': current_page + 1, 'limit': limit}) }}">Next</a>
+                {% endif %}
+            </div>
+        {% endif %}
 
     {% endapply %}
 {% endblock %}
