@@ -3,8 +3,10 @@
 namespace App\Domain\User;
 
 use App\Entity\User;
+use App\Validator\UniqueField;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[UniqueField(User::class, 'email')]
 class UserInput
 {
     #[Assert\NotBlank]
@@ -19,7 +21,7 @@ class UserInput
     #[Assert\Length(max: 320)]
     public ?string $email = null;
 
-    public static function  createInputForUpdate(User $user): self
+    public static function createInputForUpdate(User $user): self
     {
         $userInput = new self();
         $userInput->firstName = $user->getFirstName();
