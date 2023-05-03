@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Domain\User\UserCreatorInterface;
 use App\Domain\User\UserEditorInterface;
 use App\Domain\User\UserInput;
+use App\Domain\User\UserRemoverInterface;
 use App\Entity\User;
 use App\Form\UserFormType;
 use App\Repository\UserRepository;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 
 class UserController extends AbstractController
 {
@@ -66,6 +68,29 @@ class UserController extends AbstractController
         return $this->render('user/create.html.twig', [
             'create_user_form' => $form,
         ]);
+    }
+
+    #[Route('/user/delete/{id}', name: 'user_delete', methods: [Request::METHOD_POST])]
+    public function remove(User $user, Request $request, UserRemoverInterface $userRemover): Response
+    {
+        $submittedToken = $request->request->get('token');
+
+        if (!$this->isCsrfTokenValid('delete-item', $submittedToken)) {
+            throw new InvalidCsrfTokenException("Invalid CSRF token.");
+        } else {
+            $userRemover->remove($user);
+
+            $this->addFlash(
+                'success',
+                sprintf(
+                    'User %s %s deleted with success.',
+                    $user->getFirstName(),
+                    $user->getLastName(),
+                )
+            );
+
+            return $this->redirectToRoute('user_list');
+        }
     }
 
     #[Route('/user/edit/{id}', name: 'user_edit', methods: [Request::METHOD_GET, Request::METHOD_POST])]
