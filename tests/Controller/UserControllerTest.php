@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -116,5 +117,44 @@ class UserControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
         $this->assertSelectorTextContains('h1', 'User Details');
         $this->assertSelectorTextContains('td', $testUser->getFirstName());
+    }
+
+    public function testUniqueEmailConstraintOnCreate(): void
+    {
+        // Given user repository
+        $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        // Then verify that user doesn't exist in database
+        $user = $userRepository->findOneBy(['email' => 'alper.akbulut@alximy.io']);
+        $this->assertNull($user);
+
+        // When the user creates a user
+        $client->request('GET', '/user/create');
+        $client->submitForm('Save', [
+            'user_form[firstName]' => 'Alper',
+            'user_form[lastName]' => 'AKBULUT',
+            'user_form[email]' => 'alper.akbulut@alximy.io',
+        ]);
+        $this->assertResponseRedirects();
+        $client->followRedirect();
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        // Then find created user in database
+        $user = $userRepository->findOneBy(['email' => 'alper.akbulut@alximy.io']);
+        $this->assertNotNull($user);
+        $this->assertInstanceOf(User::class, $user);
+
+        // When the user creates a user with EXISTING email
+        $client->request('GET', '/user/create');
+        $client->submitForm('Save', [
+            'user_form[firstName]' => 'Alper',
+            'user_form[lastName]' => 'AKBULUT',
+            'user_form[email]' => 'alper.akbulut@alximy.io',
+        ]);
+
+        // Then the CREATION FAILS and an error message displays
+        static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $this->assertSelectorTextContains('ul li', 'The value "alper.akbulut@alximy.io" is already used');
     }
 }
