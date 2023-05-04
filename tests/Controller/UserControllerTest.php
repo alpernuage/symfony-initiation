@@ -239,7 +239,7 @@ class UserControllerTest extends WebTestCase
         // Then the UPDATE FAILS and an error message displays
         $this->assertSelectorTextContains('ul li', 'The value "test.user@example.com" is already used');
     }
-    
+
     public function testUniqueEmailConstraintOnCreate(): void
     {
         // Given user repository
@@ -277,5 +277,29 @@ class UserControllerTest extends WebTestCase
         // Then the CREATION FAILS and an error message displays
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertSelectorTextContains('ul li', 'The value "alper.akbulut@alximy.io" is already used');
+    }
+
+    public function testRemoveUser(): void
+    {
+        // Given client with User Repository
+        $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $crawler = $client->request(Request::METHOD_GET, '/users');
+
+        // When the user clicks on "Remove User" button of a user having this email
+        $testUser = $userRepository->findOneBy(['email' => 'test.user@example.com']);
+        $form = $crawler->filter('form[action="/user/delete/' . $testUser->getId() . '"]')->form();
+        $client->submit($form);
+
+        // Then the user is deleted
+        $this->assertRouteSame('user_delete', ['id' => $testUser->getId()]);
+        $this->assertNull($userRepository->find($testUser->getId()));
+
+        // Then the user should be redirected to the users list page
+        $this->assertResponseRedirects();
+        $client->followRedirect();
+        $this->assertRouteSame('user_list');
+        $this->assertSelectorExists('div:contains("User TestUser TEST deleted with success.")');
     }
 }
