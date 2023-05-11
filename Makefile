@@ -87,6 +87,11 @@ down: ## Stops containers
 reset: ## Stop and start a fresh install of the project
 reset: kill down build start
 
+## —— PHPStan ——
+.PHONY: phpstan
+phpstan: ## PHP Static Analysis Tool (https://github.com/phpstan/phpstan)
+	$(PHP) vendor/bin/phpstan
+
 ## —— Testing ——
 .PHONY: test-database
 test-database:
