@@ -26,7 +26,7 @@ class UniqueFieldValidator extends ConstraintValidator
         $entityRepository = $this->entityManager->getRepository($constraint->entityClass);
         $entity = $entityRepository->findOneBy([$fieldName => $fieldValue]);
 
-        if ($entity && $entity !== $value) {
+        if ($entity !== null && $entity->getId() !== $value->getId()) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $fieldValue)
                 ->atPath($fieldName)
