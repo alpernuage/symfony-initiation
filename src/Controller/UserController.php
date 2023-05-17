@@ -77,20 +77,20 @@ class UserController extends AbstractController
 
         if (!$this->isCsrfTokenValid('delete-item', $submittedToken)) {
             throw new InvalidCsrfTokenException("Invalid CSRF token.");
-        } else {
-            $userRemover->remove($user);
-
-            $this->addFlash(
-                'success',
-                sprintf(
-                    'User %s %s deleted with success.',
-                    $user->getFirstName(),
-                    $user->getLastName(),
-                )
-            );
-
-            return $this->redirectToRoute('user_list');
         }
+
+        $userRemover->remove($user);
+
+        $this->addFlash(
+            'success',
+            sprintf(
+                'User %s %s deleted with success.',
+                $user->getFirstName(),
+                $user->getLastName(),
+            )
+        );
+
+        return $this->redirectToRoute('user_list');
     }
 
     #[Route('/user/edit/{id}', name: 'user_edit', methods: [Request::METHOD_GET, Request::METHOD_POST])]
