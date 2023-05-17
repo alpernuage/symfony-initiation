@@ -92,6 +92,11 @@ reset: kill down build start
 phpstan: ## PHP Static Analysis Tool (https://github.com/phpstan/phpstan)
 	$(PHP) vendor/bin/phpstan
 
+## —— PHP CS Fixer ——
+.PHONY: fix-php-cs
+fix-php-cs: ## PhpCsFixer (https://cs.symfony.com/)
+	$(PHP) vendor/bin/php-cs-fixer fix --verbose
+
 ## —— Testing ——
 .PHONY: test-database
 test-database:
