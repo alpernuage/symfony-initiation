@@ -20,6 +20,7 @@
         {% for home in homes %}
             <tr>
                 <td>
+                    <a href="{{ path('home_show', {'id': home.id}) }}" class="btn btn-primary">Show Home</a>
                 </td>
                 <td>{{ home.id }}</td>
                 <td>{{ home.address }}</td>

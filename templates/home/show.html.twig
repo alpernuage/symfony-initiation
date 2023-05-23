@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+{% block title %}Home Details{% endblock %}
+{% block body %}
+    <h1>Home Details</h1>
+
+    <table>
+        <tr>
+            <th>Address</th>
+            <td>{{ home.address }}</td>
+        </tr>
+        <tr>
+            <th>City</th>
+            <td>{{ home.city }}</td>
+        </tr>
+        <tr>
+            <th>Zip Code</th>
+            <td>{{ home.zipCode }}</td>
+        </tr>
+        <tr>
+            <th>Country</th>
+            <td>{{ home.country }}</td>
+        </tr>
+        <tr>
+            <th>Currently Occupied</th>
+            <td>{{ home.currentlyOccupied ? 'Yes' : 'No' }}</td>
+        </tr>
+        <tr>
+            <th>User</th>
+            <td>{{ home.user.firstName }} {{ home.user.lastName }}</td>
+        </tr>
+    </table>
+
+    <a href="{{ path('home_list') }}">Return to the home list</a>
+{% endblock %}
