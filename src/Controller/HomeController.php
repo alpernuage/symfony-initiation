@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Domain\PaginationTrait;
 use App\Entity\Home;
+use App\Domain\Home\HomeCreatorInterface;
+use App\Domain\Home\HomeInput;
+use App\Form\HomeFormType;
 use App\Repository\HomeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,6 +41,34 @@ final class HomeController extends AbstractController
     {
         return $this->render('home/show.html.twig', [
             'home' => $home,
+        ]);
+    }
+
+    #[Route('/home/create', name: 'home_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    public function create(Request $request, HomeCreatorInterface $homeCreator): Response
+    {
+        $homeInput = new HomeInput();
+
+        $form = $this->createForm(HomeFormType::class, $homeInput);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $home = $homeCreator->create($homeInput);
+
+            $message = sprintf(
+                'New home %s %s created with success.',
+                $homeInput->address,
+                $homeInput->city
+            );
+
+            $this->addFlash('success', $message);
+
+            return $this->redirectToRoute('home_show', ['id' => $home->getId()]);
+        }
+
+        return $this->render('home/create.html.twig', [
+            'create_home_form' => $form,
         ]);
     }
 }

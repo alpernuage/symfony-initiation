@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+{% block title %}Create Home{% endblock %}
+{% block body %}
+    <h1>Create Home</h1>
+
+    {{ form(create_home_form) }}
+
+    <a href="{{ path('home_list') }}">Cancel and return to the home list</a>
+{% endblock %}

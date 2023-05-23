@@ -3,6 +3,8 @@
 {% block body %}
     <h1>Homes list</h1>
 
+    <a href="{{ path('home_create') }}" class="btn btn-primary">Create Home</a>
+
     <table class="table">
         <thead>
         <tr>
@@ -65,4 +67,8 @@
             {% endif %}
         </div>
     {% endif %}
+
+    {% for message in app.flashes('success') %}
+        <div class="flash-notice">{{ message }}</div>
+    {% endfor %}
 {% endblock %}

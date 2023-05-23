@@ -31,4 +31,8 @@
     </table>
 
     <a href="{{ path('home_list') }}">Return to the home list</a>
+
+    {% for message in app.flashes('success') %}
+        <div class="flash-notice">{{ message }}</div>
+    {% endfor %}
 {% endblock %}
