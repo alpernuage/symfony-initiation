@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Homes list</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Actions</th>
+            <th>ID</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>Zip Code</th>
+            <th>Country</th>
+            <th>Currently Occupied</th>
+            <th>User</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for home in homes %}
+            <tr>
+                <td>
+                </td>
+                <td>{{ home.id }}</td>
+                <td>{{ home.address }}</td>
+                <td>{{ home.city }}</td>
+                <td>{{ home.zipCode }}</td>
+                <td>{{ home.country }}</td>
+                <td>{{ home.currentlyOccupied ? 'Yes' : 'No' }}</td>
+                <td>{{ home.user.firstName }} {{ home.user.lastName }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">No Home found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <form action="{{ path('home_list') }}">
+        <label>
+            <select name="limit" onchange="this.form.submit()">
+                <option value="5" {% if limit == 5 %}selected{% endif %}>5</option>
+                <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
+                <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
+            </select>
+        </label>
+    </form>
+
+    {% if pages_count > 1 %}
+        <div class="pagination">
+            {% if current_page > 1 %}
+                <a href="{{ path('home_list', {'page': current_page - 1, 'limit': limit}) }}">Previous</a>
+            {% endif %}
+            {% for page in 1..pages_count %}
+                {% if page == current_page %}
+                    <span>{{ page }}</span>
+                {% else %}
+                    <a href="{{ path('home_list', {'page': page, 'limit': limit}) }}">{{ page }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if current_page < pages_count %}
+                <a href="{{ path('home_list', {'page': current_page + 1, 'limit': limit}) }}">Next</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}
