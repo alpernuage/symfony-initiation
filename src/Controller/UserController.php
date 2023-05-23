@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Domain\PaginationTrait;
 use App\Domain\User\UserCreatorInterface;
 use App\Domain\User\UserEditorInterface;
 use App\Domain\User\UserInput;
@@ -18,19 +19,23 @@ use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 
 class UserController extends AbstractController
 {
+    use PaginationTrait;
+
     #[Route('/users', name: 'user_list', methods: [Request::METHOD_GET])]
     public function index(Request $request, UserRepository $userRepository): Response
     {
-        $limit = $request->query->getInt('limit', 5);
-        $page = $request->query->getInt('page', 1);
-        $totalUsers = $userRepository->count([]);
-        $users = $userRepository->findBy([], limit: $limit, offset: ($page - 1) * $limit);
+        $paginationData = $this->getPaginationData($request, $userRepository);
+        $users = $userRepository->findBy(
+            criteria: [],
+            limit: $paginationData['limit'],
+            offset: ($paginationData['current_page'] - 1) * $paginationData['limit']
+        );
 
         return $this->render('user/index.html.twig', [
             'users' => $users,
-            'current_page' => $page,
-            'total_pages' => ceil($totalUsers / $limit),
-            'limit' => $limit,
+            'current_page' => $paginationData['current_page'],
+            'pages_count' => $paginationData['pages_count'],
+            'limit' => $paginationData['limit'],
         ]);
     }
 
