@@ -6,6 +6,7 @@ use App\Domain\PaginationTrait;
 use App\Entity\Home;
 use App\Domain\Home\HomeCreatorInterface;
 use App\Domain\Home\HomeInput;
+use App\Domain\Home\HomeRemoverInterface;
 use App\Form\HomeFormType;
 use App\Repository\HomeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 
 final class HomeController extends AbstractController
 {
@@ -70,5 +72,28 @@ final class HomeController extends AbstractController
         return $this->render('home/create.html.twig', [
             'create_home_form' => $form,
         ]);
+    }
+
+    #[Route('/home/delete/{id}', name: 'home_delete', methods: [Request::METHOD_POST])]
+    public function remove(Home $home, Request $request, HomeRemoverInterface $homeRemover): Response
+    {
+        $submittedToken = $request->request->get('token');
+
+        if (!$this->isCsrfTokenValid('delete-item', $submittedToken)) {
+            throw new InvalidCsrfTokenException("Invalid CSRF token.");
+        }
+
+        $homeRemover->remove($home);
+
+        $this->addFlash(
+            'success',
+            sprintf(
+                'Home %s %s deleted with success.',
+                $home->getAddress(),
+                $home->getCity(),
+            )
+        );
+
+        return $this->redirectToRoute('home_list');
     }
 }

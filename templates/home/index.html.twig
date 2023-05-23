@@ -23,6 +23,11 @@
             <tr>
                 <td>
                     <a href="{{ path('home_show', {'id': home.id}) }}" class="btn btn-primary">Show Home</a>
+                    <form action="{{ path('home_delete', {'id': home.id}) }}" method="POST"
+                          onsubmit="return confirm('Are you sure you want to delete this home?');">
+                        <input type="hidden" name="token" value="{{ csrf_token('delete-item') }}"/>
+                        <button type="submit" class="btn btn-danger">Remove Home</button>
+                    </form>
                 </td>
                 <td>{{ home.id }}</td>
                 <td>{{ home.address }}</td>
