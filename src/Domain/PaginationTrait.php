@@ -2,11 +2,12 @@
 
 namespace App\Domain;
 
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Request;
 
 trait PaginationTrait
 {
-    protected function getPaginationData(Request $request, object $repository, $defaultLimit = 10): array
+    protected function getPaginationData(Request $request, EntityRepository $repository, $defaultLimit = 10): array
     {
         $limit = $request->query->getInt('limit', $defaultLimit);
 
