@@ -12,16 +12,14 @@ class UniqueFieldValidator extends ConstraintValidator
     {
     }
 
-    public function validate($value, Constraint $constraint): void
+    public function validate(mixed $value, Constraint $constraint): void
     {
-        /* @var App\Validator\UniqueField $constraint */
-
-        if (null === $value || '' === $value) {
+        if (null === $value || '' === $value || !$constraint instanceof UniqueField) {
             return;
         }
 
         $fieldName = $constraint->field;
-        $fieldValue = $value->$fieldName;
+        $fieldValue = strval($value->$fieldName);
 
         $entityRepository = $this->entityManager->getRepository($constraint->entityClass);
         $entity = $entityRepository->findOneBy([$fieldName => $fieldValue]);

@@ -5,6 +5,7 @@ namespace App\Tests\Controller;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Tests\WebTestTrait;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,7 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 class UserControllerTest extends WebTestCase
 {
     use WebTestTrait;
-    private function submitCreateOrUpdateUserForm($client, $firstName, $lastName, $email = null): void
+
+    private function submitCreateOrUpdateUserForm(KernelBrowser $client, string $firstName, string $lastName, ?string $email = null): void
     {
         $client->submitForm("Save", [
             'user_form[firstName]' => $firstName,
@@ -21,13 +23,19 @@ class UserControllerTest extends WebTestCase
         ]);
     }
 
+    private function getUserRepository(): UserRepository
+    {
+        /** @var UserRepository */
+        return static::getService(UserRepository::class);
+    }
+
     public function testListUsers(): void
     {
         static::createClient()->request(Request::METHOD_GET, '/users');
 
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-        $this->assertSelectorTextContains('h1', 'Users list');
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+        self::assertSelectorTextContains('h1', 'Users list');
     }
 
     public function testCreateUser(): void
@@ -36,37 +44,36 @@ class UserControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/user/create');
 
-        $this->assertRouteSame('user_create');
-        $this->assertSelectorTextContains('h1', 'Create User');
+        self::assertRouteSame('user_create');
+        self::assertSelectorTextContains('h1', 'Create User');
 
         // When the user clicks on "return to user list" button
         $link = $crawler->filter('a:contains("Cancel and return to the user list")')->link();
         $client->click($link);
 
         // Then the user list page should be displayed
-        $this->assertSelectorTextContains('h1', 'Users list');
-        $this->assertRouteSame('user_list');
+        self::assertSelectorTextContains('h1', 'Users list');
+        self::assertRouteSame('user_list');
 
         // And the user is not created yet
-        $userRepository = static::getService(UserRepository::class);
-        $notCreatedUser = $userRepository->findOneByEmail('alper.akbulut@alximy.io');
+        $notCreatedUser = $this->getUserRepository()->findOneByEmail('alper.akbulut@alximy.io');
 
-        $this->assertNull($notCreatedUser);
-        $this->assertSelectorNotExists('div:contains("New user Alper AKBULUT created with success.")');
+        self::assertNull($notCreatedUser);
+        self::assertSelectorNotExists('div:contains("New user Alper AKBULUT created with success.")');
 
         // When the user submits the create user form with valid data
         $client->request('GET', '/user/create');
         $this->submitCreateOrUpdateUserForm($client, 'Alper', 'AKBULUT', 'alper.akbulut@alximy.io');
 
         // Then the user should be redirected to the user details page
-        $this->assertResponseRedirects();
+        self::assertResponseRedirects();
         $client->followRedirect();
-        $this->assertSelectorExists('div:contains("New user Alper AKBULUT created with success.")');
+        self::assertSelectorExists('div:contains("New user Alper AKBULUT created with success.")');
 
         // And the newly created user details should be displayed
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-        $this->assertSelectorTextContains('h1', 'User Details');
-        $this->assertSelectorTextContains('td', 'Alper');
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+        self::assertSelectorTextContains('h1', 'User Details');
+        self::assertSelectorTextContains('td', 'Alper');
     }
 
     public function testCreateUserWithInvalidEmail(): void
@@ -81,8 +88,8 @@ class UserControllerTest extends WebTestCase
         // Then an error message should be shown in the same page
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
-        $this->assertSelectorTextContains('h1', 'Create User');
-        $this->assertSelectorTextContains('ul li', 'This value is not a valid email address');
+        self::assertSelectorTextContains('h1', 'Create User');
+        self::assertSelectorTextContains('ul li', 'This value is not a valid email address');
     }
 
     public function testCreateUserWithTooLongFields(): void
@@ -101,8 +108,8 @@ class UserControllerTest extends WebTestCase
 
         // Then an error message should be shown in the same page
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $this->assertSelectorTextContains('h1', 'Create User');
-        $this->assertSelectorTextContains('ul li', 'This value is too long. It should have 255 characters or less.');
+        self::assertSelectorTextContains('h1', 'Create User');
+        self::assertSelectorTextContains('ul li', 'This value is too long. It should have 255 characters or less.');
     }
 
     public function testShowUser(): void
@@ -115,54 +122,54 @@ class UserControllerTest extends WebTestCase
         $client->request(Request::METHOD_GET, '/user/' . $testUser->getId());
 
         // Then the details ot selected user should be displayed
-        $this->assertRouteSame('user_show', ['id' => $testUser->getId()]);
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-        $this->assertSelectorTextContains('h1', 'User Details');
-        $this->assertSelectorTextContains('td', $testUser->getFirstName());
+        self::assertRouteSame('user_show', ['id' => $testUser->getId()]);
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+        self::assertSelectorTextContains('h1', 'User Details');
+        self::assertSelectorTextContains('td', $testUser->getFirstName());
     }
 
     public function testUpdateUser(): void
     {
         // Given client with User Repository
         $client = static::createClient();
-        $userRepository = static::getService(UserRepository::class);
 
         // When the user clicks on "Edit User" button of a user having this email
         $testUser = static::getTestUser();
         $client->request(Request::METHOD_GET, '/user/edit/' . $testUser->getId());
 
         // Then the details ot selected user should be displayed in editable inputs
-        $this->assertRouteSame('user_edit', ['id' => $testUser->getId()]);
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-        $this->assertSelectorTextContains('h1', 'Edit User');
-        $this->assertInputValueSame('user_form[email]', $testUser->getEmail());
+        self::assertRouteSame('user_edit', ['id' => $testUser->getId()]);
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+        self::assertSelectorTextContains('h1', 'Edit User');
+        self::assertInputValueSame('user_form[email]', strval($testUser->getEmail()));
 
         // When the user submits the edit user form
         $this->submitCreateOrUpdateUserForm($client, 'Updated First Name', 'Updated Last Name', 'updated.email@example.com');
 
         // Then the user should be updated in the database
-        $updatedUser = $userRepository->find($testUser->getId());
-        $this->assertEquals('Updated First Name', $updatedUser->getFirstName());
-        $this->assertEquals('Updated Last Name', $updatedUser->getLastName());
-        $this->assertEquals('updated.email@example.com', $updatedUser->getEmail());
+        /** @var User $updatedUser */
+        $updatedUser = $this->getUserRepository()->find($testUser->getId());
+
+        self::assertEquals('Updated First Name', $updatedUser->getFirstName());
+        self::assertEquals('Updated Last Name', $updatedUser->getLastName());
+        self::assertEquals('updated.email@example.com', $updatedUser->getEmail());
 
         // Then the user should be redirected to the user details page
-        $this->assertResponseRedirects();
+        self::assertResponseRedirects();
         $client->followRedirect();
-        $this->assertRouteSame('user_show', ['id' => $testUser->getId()]);
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-        $this->assertSelectorExists('div:contains("User Updated First Name Updated Last Name updated with success.")');
+        self::assertRouteSame('user_show', ['id' => $testUser->getId()]);
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+        self::assertSelectorExists('div:contains("User Updated First Name Updated Last Name updated with success.")');
 
         // And html tags could be found with correct contents
-        $this->assertSelectorTextContains('h1', 'User Details');
-        $this->assertSelectorTextContains('td', 'Updated First Name');
+        self::assertSelectorTextContains('h1', 'User Details');
+        self::assertSelectorTextContains('td', 'Updated First Name');
     }
 
     public function testUpdateUserWithInvalidEmail(): void
     {
         // Given client with User Repository
         $client = static::createClient();
-        $userRepository = static::getService(UserRepository::class);
 
         // When the user clicks on "Edit User" button of a user having this email
         $testUser = static::getTestUser();
@@ -172,22 +179,21 @@ class UserControllerTest extends WebTestCase
         $this->submitCreateOrUpdateUserForm($client, 'Updated First Name', 'Updated Last Name', 'invalid-email@test');
 
         // Then the user should not be updated in the database
-        $notUpdatedUser = $userRepository->findOneBy(['email' => 'invalid-email@test']);
-        $this->assertNull($notUpdatedUser);
-        $this->assertSelectorNotExists('div:contains("User Updated First Name Updated Last Name updated with success.")');
+        $notUpdatedUser = $this->getUserRepository()->findOneBy(['email' => 'invalid-email@test']);
+        self::assertNull($notUpdatedUser);
+        self::assertSelectorNotExists('div:contains("User Updated First Name Updated Last Name updated with success.")');
 
         // Then an error message should be shown in the same page
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
-        $this->assertSelectorTextContains('h1', 'Edit User');
-        $this->assertSelectorTextContains('ul li', 'This value is not a valid email address');
+        self::assertSelectorTextContains('h1', 'Edit User');
+        self::assertSelectorTextContains('ul li', 'This value is not a valid email address');
     }
 
     public function testUpdateUserWithTooLongFields(): void
     {
         // Given client with User Repository
         $client = static::createClient();
-        $userRepository = static::getService(UserRepository::class);
 
         // When the user clicks on "Edit User" button of a user having this email
         $testUser = static::getTestUser();
@@ -202,14 +208,14 @@ class UserControllerTest extends WebTestCase
         );
 
         // Then the user should not be updated in the database
-        $notUpdatedUser = $userRepository->findOneBy(['email' => 'valid-email@test.comt']);
-        $this->assertNull($notUpdatedUser);
+        $notUpdatedUser = $this->getUserRepository()->findOneBy(['email' => 'valid-email@test.comt']);
+        self::assertNull($notUpdatedUser);
 
         // Then an error message should be shown in the same page
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
-        $this->assertSelectorTextContains('h1', 'Edit User');
-        $this->assertSelectorTextContains('ul li', 'This value is too long. It should have 255 characters or less.');
+        self::assertSelectorTextContains('h1', 'Edit User');
+        self::assertSelectorTextContains('ul li', 'This value is too long. It should have 255 characters or less.');
     }
 
     public function testUniqueEmailConstraintOnUpdate(): void
@@ -219,39 +225,35 @@ class UserControllerTest extends WebTestCase
 
         // Then find a user existing in database
         $user = static::getTestUser();
-        $this->assertNotNull($user);
-        $this->assertInstanceOf(User::class, $user);
 
         // Then a user is updated with an EXISTING email
         $client->request(Request::METHOD_GET, '/user/edit/' . $user->getId());
         $this->submitCreateOrUpdateUserForm($client, 'Updated First Name', 'Updated Last Name', 'test.user@example.com');
 
         // Then the UPDATE FAILS and an error message displays
-        $this->assertSelectorTextContains('ul li', 'The value "test.user@example.com" is already used');
+        self::assertSelectorTextContains('ul li', 'The value "test.user@example.com" is already used');
     }
 
     public function testUniqueEmailConstraintOnCreate(): void
     {
         // Given user repository
         $client = static::createClient();
-        $userRepository = static::getService(UserRepository::class);
 
         // Then verify that user doesn't exist in database
-        $user = $userRepository->findOneBy(['email' => 'alper.akbulut@alximy.io']);
-        $this->assertNull($user);
+        $user = $this->getUserRepository()->findOneBy(['email' => 'alper.akbulut@alximy.io']);
+        self::assertNull($user);
 
         // When the user creates a user
         $client->request('GET', '/user/create');
         $this->submitCreateOrUpdateUserForm($client, 'Alper', 'AKBULUT', 'alper.akbulut@alximy.io');
 
-        $this->assertResponseRedirects();
+        self::assertResponseRedirects();
         $client->followRedirect();
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
 
         // Then find created user in database
-        $user = $userRepository->findOneBy(['email' => 'alper.akbulut@alximy.io']);
-        $this->assertNotNull($user);
-        $this->assertInstanceOf(User::class, $user);
+        $user = $this->getUserRepository()->findOneBy(['email' => 'alper.akbulut@alximy.io']);
+        self::assertInstanceOf(User::class, $user);
 
         // When the user creates a user with EXISTING email
         $client->request('GET', '/user/create');
@@ -259,14 +261,13 @@ class UserControllerTest extends WebTestCase
 
         // Then the CREATION FAILS and an error message displays
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $this->assertSelectorTextContains('ul li', 'The value "alper.akbulut@alximy.io" is already used');
+        self::assertSelectorTextContains('ul li', 'The value "alper.akbulut@alximy.io" is already used');
     }
 
     public function testRemoveUser(): void
     {
         // Given client with User Repository
         $client = static::createClient();
-        $userRepository = static::getService(UserRepository::class);
 
         $crawler = $client->request(Request::METHOD_GET, '/users');
 
@@ -276,13 +277,13 @@ class UserControllerTest extends WebTestCase
         $client->submit($form);
 
         // Then the user is deleted
-        $this->assertRouteSame('user_delete', ['id' => $testUser->getId()]);
-        $this->assertNull($userRepository->find($testUser->getId()));
+        self::assertRouteSame('user_delete', ['id' => $testUser->getId()]);
+        self::assertNull($this->getUserRepository()->find($testUser->getId()));
 
         // Then the user should be redirected to the users list page
-        $this->assertResponseRedirects();
+        self::assertResponseRedirects();
         $client->followRedirect();
-        $this->assertRouteSame('user_list');
-        $this->assertSelectorExists('div:contains("User TestUser TEST deleted with success.")');
+        self::assertRouteSame('user_list');
+        self::assertSelectorExists('div:contains("User TestUser TEST deleted with success.")');
     }
 }

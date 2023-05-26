@@ -78,7 +78,8 @@ class UserController extends AbstractController
     #[Route('/user/delete/{id}', name: 'user_delete', methods: [Request::METHOD_POST])]
     public function remove(User $user, Request $request, UserRemoverInterface $userRemover): Response
     {
-        $submittedToken = $request->request->get('token');
+        /** @var string $submittedToken */
+        $submittedToken = $request->request->get('token', "");
 
         if (!$this->isCsrfTokenValid('delete-item', $submittedToken)) {
             throw new InvalidCsrfTokenException("Invalid CSRF token.");

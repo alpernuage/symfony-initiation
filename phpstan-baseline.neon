@@ -1,0 +1,31 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method object\\:\\:getId\\(\\)\\.$#"
+			count: 1
+			path: src/Validator/UniqueFieldValidator.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on mixed\\.$#"
+			count: 1
+			path: src/Validator/UniqueFieldValidator.php
+
+		-
+			message: "#^Parameter \\#1 \\$className of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getRepository\\(\\) expects class\\-string\\<object\\>, string given\\.$#"
+			count: 1
+			path: src/Validator/UniqueFieldValidator.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getRepository\\(\\)$#"
+			count: 1
+			path: src/Validator/UniqueFieldValidator.php
+
+		-
+			message: "#^Variable property access on mixed\\.$#"
+			count: 1
+			path: src/Validator/UniqueFieldValidator.php
+
+		-
+			message: "#^Call to function method_exists\\(\\) with 'Symfony\\\\\\\\Component\\\\\\\\Dotenv\\\\\\\\Dotenv' and 'bootEnv' will always evaluate to true\\.$#"
+			count: 1
+			path: tests/bootstrap.php
