@@ -37,6 +37,7 @@ class UserInput
     public static function createInputForUpdate(User $user): self
     {
         $userInput = new self();
+        $userInput->id = $user->getId();
         $userInput->firstName = $user->getFirstName();
         $userInput->lastName = $user->getLastName();
         $userInput->email = $user->getEmail();

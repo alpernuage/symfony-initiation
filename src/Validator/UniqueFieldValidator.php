@@ -19,7 +19,7 @@ class UniqueFieldValidator extends ConstraintValidator
         }
 
         $fieldName = $constraint->field;
-        $fieldValue = strval($value->$fieldName);
+        $fieldValue = strval($value->$fieldName) ?? '';
 
         $entityRepository = $this->entityManager->getRepository($constraint->entityClass);
         $entity = $entityRepository->findOneBy([$fieldName => $fieldValue]);

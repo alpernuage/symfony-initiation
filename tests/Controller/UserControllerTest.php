@@ -208,15 +208,22 @@ class UserControllerTest extends WebTestCase
     {
         // Given the "John" user is created
         $client = static::createClient();
-        $user = static::getTestUser();
-        $this->assertNotNull($user);
-        $this->assertInstanceOf(User::class, $user);
+        $testUser = static::getTestUser();
+        self::assertNotNull($testUser);
+        self::assertInstanceOf(User::class, $testUser);
 
-        // When we update the "John" user with the following EXISTING email address
+        // Then create the "Alper" user with NON EXISTING email
+        $client->request('GET', '/user/create');
+        self::submitCreateOrUpdateUserForm($client, 'Alper', 'AKBULUT', 'alper.akbulut@alximy.io');
+        $user = $this->getUserRepository()->findOneBy(['email' => 'alper.akbulut@alximy.io']);
+
+        // When we update the "Alper" user with the following EXISTING email address
         $client->request(Request::METHOD_GET, '/user/edit/' . $user->getId());
         $this->submitCreateOrUpdateUserForm($client, 'Emma', 'BROWN', 'test.user@example.com');
 
-        // Then the "John" user update fails
+        // Then the "Alper" user update fails
+        static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertSelectorExists('ul li');
         self::assertSelectorTextContains('ul li', 'The value "test.user@example.com" is already used');
     }
 
