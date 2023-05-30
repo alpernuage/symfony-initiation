@@ -20,9 +20,15 @@ class UserFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('firstName')
-            ->add('lastName')
-            ->add('email')
-            ->add('save', SubmitType::class, ['label' => 'Save']);
+            ->add('firstName', null, [
+                'label' => 'user.first_name',
+            ])
+            ->add('lastName', null, [
+                'label' => 'user.last_name',
+            ])
+            ->add('email', null, [
+                'label' => 'user.email',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'buttons.save']);
     }
 }

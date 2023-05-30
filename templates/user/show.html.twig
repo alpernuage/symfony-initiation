@@ -1,26 +1,26 @@
 {% extends 'base.html.twig' %}
-{% block title %}User Details{% endblock %}
+{% block title %}{{ 'actions.show'|trans({'%entity%': 'labels.user'|trans}) }}{% endblock %}
 {% block body %}
-    <h1>User Details</h1>
+    <h1>{{ 'actions.show'|trans({'%entity%': 'labels.user'|trans}) }}</h1>
 
     <table>
         <tr>
-            <th>First Name</th>
+            <th>{{ 'user.first_name'|trans }}</th>
             <td>{{ user.firstName }}</td>
         </tr>
         <tr>
-            <th>Last Name</th>
+            <th>{{ 'user.last_name'|trans }}</th>
             <td>{{ user.lastName }}</td>
         </tr>
         <tr>
-            <th>Email</th>
+            <th>{{ 'user.email'|trans }}</th>
             <td>{{ user.email|default('N/A') }}</td>
         </tr>
     </table>
 
-    <a href="{{ path('user_list') }}">Return to the user list</a>
+    <a href="{{ path('user_list') }}">{{ 'buttons.return'|trans({'%entity%': 'labels.users'|trans}) }}</a>
 
     {% for message in app.flashes('success') %}
-        <div class="flash-notice">{{ message }}</div>
+        <div class="flash-notice">{{ message|trans }}</div>
     {% endfor %}
 {% endblock %}

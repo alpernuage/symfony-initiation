@@ -25,20 +25,29 @@ class HomeFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('address', TextType::class)
-            ->add('city', TextType::class)
-            ->add('zipCode', TextType::class)
-            ->add('country', CountryType::class)
+            ->add('address', TextType::class, [
+                'label' => 'home.address',
+            ])
+            ->add('city', TextType::class, [
+                'label' => 'home.city',
+            ])
+            ->add('zipCode', TextType::class, [
+                'label' => 'home.zip_code',
+            ])
+            ->add('country', CountryType::class, [
+                'label' => 'home.country',
+            ])
             ->add('currentlyOccupied', CheckboxType::class, [
-                'label' => 'Currently Occupied',
+                'label' => 'home.currently_occupied',
                 'required' => false,
             ])
             ->add('user', EntityType::class, [
+                'label' => 'labels.user',
                 'class' => User::class,
                 'choice_label' => function (User $user) {
                     return $user->getFirstName() . ' ' . $user->getLastName();
                 },
             ])
-            ->add('save', SubmitType::class, ['label' => 'Save']);
+            ->add('save', SubmitType::class, ['label' => 'buttons.save']);
     }
 }

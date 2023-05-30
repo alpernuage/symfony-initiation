@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
-{% block title %}Create User{% endblock %}
+{% block title %}{{ 'actions.create'|trans({'%entity%': 'labels.user'|trans}) }}{% endblock %}
 {% block body %}
-    <h1>Create User</h1>
+    <h1>{{ 'actions.create'|trans({'%entity%': 'labels.user'|trans}) }}</h1>
 
     {{ form(create_user_form) }}
 
-    <a href="{{ path('user_list') }}">Cancel and return to the user list</a>
+    <a href="{{ path('user_list') }}">{{ 'actions.cancel'|trans({'%entity%': 'labels.user'|trans}) }}</a>
 {% endblock %}

@@ -1,38 +1,38 @@
 {% extends 'base.html.twig' %}
-{% block title %}Home Details{% endblock %}
+{% block title %}{{ 'actions.show'|trans({'%entity%': 'labels.home'|trans}) }}{% endblock %}
 {% block body %}
-    <h1>Home Details</h1>
+    <h1>{{ 'actions.show'|trans({'%entity%': 'labels.home'|trans}) }}</h1>
 
     <table>
         <tr>
-            <th>Address</th>
+            <th>{{ 'home.address'|trans }}</th>
             <td>{{ home.address }}</td>
         </tr>
         <tr>
-            <th>City</th>
+            <th>{{ 'home.city'|trans }}</th>
             <td>{{ home.city }}</td>
         </tr>
         <tr>
-            <th>Zip Code</th>
+            <th>{{ 'home.zip_code'|trans }}</th>
             <td>{{ home.zipCode }}</td>
         </tr>
         <tr>
-            <th>Country</th>
+            <th>{{ 'home.country'|trans }}</th>
             <td>{{ home.country }}</td>
         </tr>
         <tr>
-            <th>Currently Occupied</th>
+            <th>{{ 'home.currently_occupied'|trans }}</th>
             <td>{{ home.currentlyOccupied ? 'Yes' : 'No' }}</td>
         </tr>
         <tr>
-            <th>User</th>
+            <th>{{ 'labels.user'|trans }}</th>
             <td>{{ home.user.firstName }} {{ home.user.lastName }}</td>
         </tr>
     </table>
 
-    <a href="{{ path('home_list') }}">Return to the home list</a>
+    <a href="{{ path('home_list') }}">{{ 'buttons.return'|trans({'%entity%': 'labels.homes'|trans}) }}</a>
 
     {% for message in app.flashes('success') %}
-        <div class="flash-notice">{{ message }}</div>
+        <div class="flash-notice">{{ message|trans }}</div>
     {% endfor %}
 {% endblock %}

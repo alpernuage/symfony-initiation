@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Domain\PaginationTrait;
+use App\Domain\SuccessMessageTrait;
 use App\Entity\Home;
 use App\Domain\Home\HomeCreatorInterface;
 use App\Domain\Home\HomeInput;
@@ -16,10 +17,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class HomeController extends AbstractController
 {
     use PaginationTrait;
+    use SuccessMessageTrait;
 
     #[Route('/homes', name: 'home_list', methods: [Request::METHOD_GET])]
     public function index(Request $request, HomeRepository $homeRepository): Response
@@ -48,7 +51,7 @@ final class HomeController extends AbstractController
     }
 
     #[Route('/home/create', name: 'home_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function create(Request $request, HomeCreatorInterface $homeCreator): Response
+    public function create(Request $request, HomeCreatorInterface $homeCreator, TranslatorInterface $translator): Response
     {
         $homeInput = new HomeInput();
 
@@ -58,9 +61,9 @@ final class HomeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $home = $homeCreator->create($homeInput);
-
+            $this->setTranslator($translator);
             $message = sprintf(
-                'New home %s %s created with success.',
+                $this->getSuccessMessage('create', 'home'),
                 $homeInput->address,
                 $homeInput->city
             );
@@ -76,7 +79,7 @@ final class HomeController extends AbstractController
     }
 
     #[Route('/home/edit/{id}', name: 'home_edit', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function edit(Home $home, Request $request, HomeEditorInterface $homeEditor): Response
+    public function edit(Home $home, Request $request, HomeEditorInterface $homeEditor, TranslatorInterface $translator): Response
     {
         $homeInput = HomeInput::createInputForUpdate($home);
 
@@ -84,10 +87,11 @@ final class HomeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $homeEditor->edit($home, $homeInput);
 
+            $homeEditor->edit($home, $homeInput);
+            $this->setTranslator($translator);
             $message = sprintf(
-                'Home %s %s updated with success.',
+                $this->getSuccessMessage('edit', 'home'),
                 $homeInput->address,
                 $homeInput->city
             );
@@ -103,7 +107,7 @@ final class HomeController extends AbstractController
     }
 
     #[Route('/home/delete/{id}', name: 'home_delete', methods: [Request::METHOD_POST])]
-    public function remove(Home $home, Request $request, HomeRemoverInterface $homeRemover): Response
+    public function remove(Home $home, Request $request, HomeRemoverInterface $homeRemover, TranslatorInterface $translator): Response
     {
         $submittedToken = $request->request->get('token');
 
@@ -112,11 +116,11 @@ final class HomeController extends AbstractController
         }
 
         $homeRemover->remove($home);
-
+        $this->setTranslator($translator);
         $this->addFlash(
             'success',
             sprintf(
-                'Home %s %s deleted with success.',
+                $this->getSuccessMessage('delete', 'home'),
                 $home->getAddress(),
                 $home->getCity(),
             )

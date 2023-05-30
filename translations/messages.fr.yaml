@@ -1,0 +1,45 @@
+list: Liste des
+id: ID
+confirm_delete: Êtes-vous sûr de vouloir supprimer %entity% ?
+no_user_found: Aucun utilisateur trouvé
+no_home_found: Aucune maison trouvée
+actions_title: Actions
+entity: Entité
+
+labels:
+  user: Utilisateur
+  home: Maison
+  users: Utilisateurs
+  homes: Maisons
+
+user:
+  first_name: Prénom
+  last_name: Nom
+  email: Email
+
+home:
+  address: Adresse
+  city: Ville
+  zip_code: Code Postal
+  country: Pays
+  currently_occupied: Occupée ?
+
+actions:
+  show: "%entity% Détails"
+  create: Créer %entity%
+  edit: Modifier %entity%
+  remove: Supprimer %entity%
+  cancel: Annuler et retourner à la page de liste %entity%
+
+pagination:
+  previous: Précédent
+  next: Suivant
+
+success:
+  create: '%entity% %s %s a été créé avec succès.'
+  edit: '%entity% %s %s a été mis à jour avec succès.'
+  delete: '%entity% %s %s a été supprimé avec succès.'
+
+buttons:
+  save: Enregistrer
+  return: Retourner à la page de liste %entity%

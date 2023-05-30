@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Domain\PaginationTrait;
+use App\Domain\SuccessMessageTrait;
 use App\Domain\User\UserCreatorInterface;
 use App\Domain\User\UserEditorInterface;
 use App\Domain\User\UserInput;
@@ -16,10 +17,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserController extends AbstractController
 {
     use PaginationTrait;
+    use SuccessMessageTrait;
 
     #[Route('/users', name: 'user_list', methods: [Request::METHOD_GET])]
     public function index(Request $request, UserRepository $userRepository): Response
@@ -48,7 +51,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/create', name: 'user_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function create(Request $request, UserCreatorInterface $userCreator): Response
+    public function create(Request $request, UserCreatorInterface $userCreator, TranslatorInterface $translator): Response
     {
         $userInput = new UserInput();
 
@@ -58,9 +61,9 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $user = $userCreator->create($userInput);
-
+            $this->setTranslator($translator);
             $message = sprintf(
-                'New user %s %s created with success.',
+                $this->getSuccessMessage('create', 'user'),
                 $userInput->firstName,
                 $userInput->lastName
             );
@@ -76,7 +79,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/delete/{id}', name: 'user_delete', methods: [Request::METHOD_POST])]
-    public function remove(User $user, Request $request, UserRemoverInterface $userRemover): Response
+    public function remove(User $user, Request $request, UserRemoverInterface $userRemover, TranslatorInterface $translator): Response
     {
         /** @var string $submittedToken */
         $submittedToken = $request->request->get('token', "");
@@ -86,11 +89,11 @@ class UserController extends AbstractController
         }
 
         $userRemover->remove($user);
-
+        $this->setTranslator($translator);
         $this->addFlash(
             'success',
             sprintf(
-                'User %s %s deleted with success.',
+                $this->getSuccessMessage('delete', 'user'),
                 $user->getFirstName(),
                 $user->getLastName(),
             )
@@ -100,7 +103,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/edit/{id}', name: 'user_edit', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function edit(User $user, Request $request, UserEditorInterface $userEditor): Response
+    public function edit(User $user, Request $request, UserEditorInterface $userEditor, TranslatorInterface $translator): Response
     {
         $userInput = UserInput::createInputForUpdate($user);
 
@@ -110,9 +113,9 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $userEditor->edit($user, $userInput);
-
+            $this->setTranslator($translator);
             $message = sprintf(
-                'User %s %s updated with success.',
+                $this->getSuccessMessage('edit', 'user'),
                 $userInput->firstName,
                 $userInput->lastName
             );
