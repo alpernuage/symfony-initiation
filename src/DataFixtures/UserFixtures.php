@@ -13,8 +13,8 @@ class UserFixtures extends Fixture
     {
         $faker = Factory::create('fr_FR');
         $testUser = new User(
-            "TestUser",
-            "TEST",
+            "John",
+            "DOE",
             "test.user@example.com",
         );
 

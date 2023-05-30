@@ -79,7 +79,7 @@ class UserControllerTest extends WebTestCase
         $client->request('GET', '/user/create');
 
         // When we create the "Alper" user with INVALID email address
-        $this->submitCreateOrUpdateUserForm($client, 'Alper', 'AKBULUT', 'invalid-email@test');
+        $this->submitCreateOrUpdateUserForm($client, 'Alper', 'AKBULUT', 'invalid-email@example');
 
         // Then the "Alper" user creation fails
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -97,9 +97,9 @@ class UserControllerTest extends WebTestCase
         // When we create the "Alice" user with TOO LONG firstName and lastName
         $this->submitCreateOrUpdateUserForm(
             $client,
+            'Alice Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel nisi sit amet lacus pulvinar ullamcorper. Etiam neque orci, feugiat nec augue a, dapibus eleifend ante. Nam congue, tellus in hendrerit cursus, lacus justo iaculis sapien, sit amet tempor elit erat in ex. Cras a ipsum sit amet fusce.',
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel nisi sit amet lacus pulvinar ullamcorper. Etiam neque orci, feugiat nec augue a, dapibus eleifend ante. Nam congue, tellus in hendrerit cursus, lacus justo iaculis sapien, sit amet tempor elit erat in ex. Cras a ipsum sit amet fusce.',
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel nisi sit amet lacus pulvinar ullamcorper. Etiam neque orci, feugiat nec augue a, dapibus eleifend ante. Nam congue, tellus in hendrerit cursus, lacus justo iaculis sapien, sit amet tempor elit erat in ex. Cras a ipsum sit amet fusce.',
-            'valid-email@test.com'
+            'valid-email@example.com'
         );
 
         // Then the "Alice" user creation fails
@@ -138,14 +138,14 @@ class UserControllerTest extends WebTestCase
         self::assertInputValueSame('user_form[email]', strval($testUser->getEmail()));
 
         // When we update the "John" user with the following data
-        $this->submitCreateOrUpdateUserForm($client, 'Updated First Name', 'Updated Last Name', 'updated.email@example.com');
+        $this->submitCreateOrUpdateUserForm($client, 'Emma', 'BROWN', 'updated.email@example.com');
 
         // Then the "John" user is successfully updated
         /** @var User $updatedUser */
         $updatedUser = $this->getUserRepository()->find($testUser->getId());
 
-        self::assertEquals('Updated First Name', $updatedUser->getFirstName());
-        self::assertEquals('Updated Last Name', $updatedUser->getLastName());
+        self::assertEquals('Emma', $updatedUser->getFirstName());
+        self::assertEquals('BROWN', $updatedUser->getLastName());
         self::assertEquals('updated.email@example.com', $updatedUser->getEmail());
 
         // And we find the "John" user with the same "{id}" and the updated data
@@ -153,9 +153,9 @@ class UserControllerTest extends WebTestCase
         $client->followRedirect();
         self::assertRouteSame('user_show', ['id' => $testUser->getId()]);
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertSelectorExists('div:contains("User Updated First Name Updated Last Name updated with success.")');
+        self::assertSelectorExists('div:contains("User Emma BROWN updated with success.")');
         self::assertSelectorTextContains('h1', 'User Details');
-        self::assertSelectorTextContains('td', 'Updated First Name');
+        self::assertSelectorTextContains('td', 'Emma');
     }
 
     public function testUpdateUserWithInvalidEmail(): void
@@ -166,12 +166,12 @@ class UserControllerTest extends WebTestCase
         $client->request(Request::METHOD_GET, '/user/edit/' . $testUser->getId());
 
         // When we update the "John" user with the following INVALID email address
-        $this->submitCreateOrUpdateUserForm($client, 'Updated First Name', 'Updated Last Name', 'invalid-email@test');
+        $this->submitCreateOrUpdateUserForm($client, 'Emma', 'BROWN', 'invalid-email@example');
 
         // Then the "John" user update fails
-        $notUpdatedUser = $this->getUserRepository()->findOneBy(['email' => 'invalid-email@test']);
+        $notUpdatedUser = $this->getUserRepository()->findOneBy(['email' => 'invalid-email@example']);
         self::assertNull($notUpdatedUser);
-        self::assertSelectorNotExists('div:contains("User Updated First Name Updated Last Name updated with success.")');
+        self::assertSelectorNotExists('div:contains("User Emma BROWN updated with success.")');
 
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
@@ -195,7 +195,7 @@ class UserControllerTest extends WebTestCase
         );
 
         // Then the "John" user update fails
-        $notUpdatedUser = $this->getUserRepository()->findOneBy(['email' => 'valid-email@test.comt']);
+        $notUpdatedUser = $this->getUserRepository()->findOneBy(['email' => 'valid-email@example.com']);
         self::assertNull($notUpdatedUser);
 
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -214,7 +214,7 @@ class UserControllerTest extends WebTestCase
 
         // When we update the "John" user with the following EXISTING email address
         $client->request(Request::METHOD_GET, '/user/edit/' . $user->getId());
-        $this->submitCreateOrUpdateUserForm($client, 'Updated First Name', 'Updated Last Name', 'test.user@example.com');
+        $this->submitCreateOrUpdateUserForm($client, 'Emma', 'BROWN', 'test.user@example.com');
 
         // Then the "John" user update fails
         self::assertSelectorTextContains('ul li', 'The value "test.user@example.com" is already used');
@@ -242,7 +242,7 @@ class UserControllerTest extends WebTestCase
 
         // When we create the "David" user with EXISTING email address "alper.akbulut@alximy.io"
         $client->request('GET', '/user/create');
-        $this->submitCreateOrUpdateUserForm($client, 'Alper', 'AKBULUT', 'alper.akbulut@alximy.io');
+        $this->submitCreateOrUpdateUserForm($client, 'David', 'AKBULUT', 'alper.akbulut@alximy.io');
 
         // Then the "David" user creation fails
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -267,6 +267,6 @@ class UserControllerTest extends WebTestCase
         self::assertResponseRedirects();
         $client->followRedirect();
         self::assertRouteSame('user_list');
-        self::assertSelectorExists('div:contains("User TestUser TEST deleted with success.")');
+        self::assertSelectorExists('div:contains("User John DOE deleted with success.")');
     }
 }
