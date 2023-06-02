@@ -13,12 +13,17 @@ class HomeControllerTest extends WebTestCase
 {
     use WebTestTrait;
 
+    private const ENTITY_NAME = "Maison";
+
     public function testListHomes(): void
     {
         static::createClient()->request(Request::METHOD_GET, '/homes');
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertSelectorTextContains('h1', 'Homes list');
+
+        $translatedText = static::getTranslator()->trans('list') . ' ' . static::getTranslator()->trans('labels.homes');
+
+        self::assertSelectorTextContains('h1', $translatedText);
     }
 
     public function testCancelButtonRedirectsToHomeListPageInCreateHomePage(): void
@@ -29,12 +34,20 @@ class HomeControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         self::assertRouteSame('home_create');
-        self::assertSelectorTextContains('h1', 'Create Home');
 
-        $client->clickLink("Cancel and return to the home list");
+        $translatedCreateText = self::getTranslatedActionText('create', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedCreateText);
+
+        $translatedCancelButtonText = self::getTranslatedActionText('cancel', self::ENTITY_NAME);
+
+        $client->clickLink($translatedCancelButtonText);
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertSelectorTextContains('h1', 'Homes list');
+
+        $translatedText = static::getTranslator()->trans('list') . ' ' . static::getTranslator()->trans('labels.homes');
+
+        self::assertSelectorTextContains('h1', $translatedText);
         self::assertRouteSame('home_list');
     }
 
@@ -46,7 +59,10 @@ class HomeControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         self::assertRouteSame('home_create');
-        self::assertSelectorTextContains('h1', 'Create Home');
+
+        $translatedCreateText = self::getTranslatedActionText('create', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedCreateText);
 
         // When we create the "75, rue Auguste Hamel Lacroix-Sur-Mer" home
         $home = new Home(
@@ -58,7 +74,7 @@ class HomeControllerTest extends WebTestCase
             static::getTestUser(),
         );
 
-        $client->submitForm("Save", [
+        $client->submitForm(self::SAVE_BUTTON, [
             'home_form[address]' => $home->getAddress(),
             'home_form[city]' => $home->getCity(),
             'home_form[zipCode]' => $home->getZipCode(),
@@ -71,10 +87,16 @@ class HomeControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
         self::assertResponseRedirects();
         $client->followRedirect();
-        self::assertSelectorExists('div:contains("New home 75, rue Auguste Hamel Lacroix-Sur-Mer created with success.")');
+
+        $translatedSuccessMessage = self::getTranslatedSuccessMessage('create', self::ENTITY_NAME, ['75, rue Auguste Hamel', 'Lacroix-Sur-Mer']);
+
+        self::assertSelectorExists("div:contains('$translatedSuccessMessage')");
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertSelectorTextContains('h1', 'Home Details');
+
+        $translatedShowText = self::getTranslatedActionText('show', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedShowText);
         self::assertSelectorTextContains('td', '75, rue Auguste Hamel');
     }
 
@@ -94,7 +116,10 @@ class HomeControllerTest extends WebTestCase
         // Then the "random existing home" is successfully viewed
         self::assertRouteSame('home_show', ['id' => $home->getId()]);
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertSelectorTextContains('h1', 'Home Details');
+
+        $translatedShowText = self::getTranslatedActionText('show', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedShowText);
         self::assertSelectorTextContains('td', $home->getAddress());
     }
 
@@ -111,11 +136,14 @@ class HomeControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         self::assertRouteSame('home_edit', ['id' => $home->getId()]);
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertSelectorTextContains('h1', 'Edit Home');
+
+        $translatedEditText = self::getTranslatedActionText('edit', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedEditText);
         self::assertInputValueSame('home_form[city]', $home->getCity());
 
         // When we update the "random existing home" with the following data
-        $client->submitForm("Save", [
+        $client->submitForm(self::SAVE_BUTTON, [
             'home_form[address]' => '75, rue Auguste Hamel',
             'home_form[city]' => 'Lacroix-Sur-Mer',
             'home_form[zipCode]' => $home->getZipCode(),
@@ -137,8 +165,14 @@ class HomeControllerTest extends WebTestCase
         $client->followRedirect();
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         self::assertRouteSame('home_show', ['id' => $home->getId()]);
-        self::assertSelectorExists('div:contains("Home 75, rue Auguste Hamel Lacroix-Sur-Mer updated with success.")');
-        self::assertSelectorTextContains('h1', 'Home Details');
+
+        $translatedSuccessMessage = self::getTranslatedSuccessMessage('edit', self::ENTITY_NAME, ['75, rue Auguste Hamel', 'Lacroix-Sur-Mer']);
+
+        self::assertSelectorExists("div:contains('$translatedSuccessMessage')");
+
+        $translatedShowText = self::getTranslatedActionText('show', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedShowText);
         self::assertSelectorTextContains('td', '75, rue Auguste Hamel');
     }
 
@@ -155,7 +189,9 @@ class HomeControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
 
-        $client->submitForm("Remove Home");
+        $translatedRemoveButtonText = self::getTranslatedActionText('remove', self::ENTITY_NAME);
+
+        $client->submitForm($translatedRemoveButtonText);
 
         // Then the "random existing home" is removed
         self::assertRouteSame('home_delete', ['id' => $home->getId()]);
@@ -165,9 +201,12 @@ class HomeControllerTest extends WebTestCase
         $client->followRedirect();
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         self::assertRouteSame('home_list');
+
+        $translatedSuccessMessage = self::getTranslatedSuccessMessage('delete', self::ENTITY_NAME, [$home->getAddress(), $home->getCity()]);
+
         self::assertSelectorTextContains(
             'div.flash-notice',
-            'Home ' . $home->getAddress() . ' ' . $home->getCity() . ' deleted with success.'
+            $translatedSuccessMessage
         );
     }
 

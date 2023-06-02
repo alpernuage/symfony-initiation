@@ -14,9 +14,13 @@ class UserControllerTest extends WebTestCase
 {
     use WebTestTrait;
 
+    private const ENTITY_NAME = "Utilisateur";
+    private const TOO_LONG_STRING_ERROR_MESSAGE = "Cette chaîne est trop longue. Elle doit avoir au maximum 255 caractères.";
+    private const INVALID_EMAIL_ERROR_MESSAGE = "Cette valeur n'est pas une adresse email valide.";
+
     private function submitCreateOrUpdateUserForm(KernelBrowser $client, string $firstName, string $lastName, ?string $email = null): void
     {
-        $client->submitForm("Save", [
+        $client->submitForm(self::SAVE_BUTTON, [
             'user_form[firstName]' => $firstName,
             'user_form[lastName]' => $lastName,
             'user_form[email]' => $email,
@@ -35,7 +39,10 @@ class UserControllerTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertSelectorTextContains('h1', 'Users list');
+
+        $translatedText = static::getTranslator()->trans('list') . ' ' . static::getTranslator()->trans('labels.users');
+
+        self::assertSelectorTextContains('h1', $translatedText);
     }
 
     public function testCreateUser(): void
@@ -45,12 +52,14 @@ class UserControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/user/create');
 
         self::assertRouteSame('user_create');
-        self::assertSelectorTextContains('h1', 'Create User');
 
-        $link = $crawler->filter('a:contains("Cancel and return to the user list")')->link();
+        $translatedCancelButtonText = self::getTranslatedActionText('cancel', self::ENTITY_NAME);
+        $link = $crawler->filter("a:contains($translatedCancelButtonText)")->link();
         $client->click($link);
 
-        self::assertSelectorTextContains('h1', 'Users list');
+        $translatedText = static::getTranslator()->trans('list') . ' ' . static::getTranslator()->trans('labels.users');
+
+        self::assertSelectorTextContains('h1', $translatedText);
         self::assertRouteSame('user_list');
 
         $notCreatedUser = $this->getUserRepository()->findOneByEmail('alper.akbulut@alximy.io');
@@ -65,10 +74,15 @@ class UserControllerTest extends WebTestCase
         // Then the "Alper" user is successfully created
         self::assertResponseRedirects();
         $client->followRedirect();
-        self::assertSelectorExists('div:contains("New user Alper AKBULUT created with success.")');
 
+        $translatedSuccessMessage = self::getTranslatedSuccessMessage('create', self::ENTITY_NAME, ['Alper', 'AKBULUT']);
+
+        self::assertSelectorExists("div:contains('$translatedSuccessMessage')");
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertSelectorTextContains('h1', 'User Details');
+
+        $translatedShowText = self::getTranslatedActionText('show', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedShowText);
         self::assertSelectorTextContains('td', 'Alper');
     }
 
@@ -84,8 +98,10 @@ class UserControllerTest extends WebTestCase
         // Then the "Alper" user creation fails
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
-        self::assertSelectorTextContains('h1', 'Create User');
-        self::assertSelectorTextContains('ul li', 'This value is not a valid email address');
+        $translatedCreateText = self::getTranslatedActionText('create', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedCreateText);
+        self::assertSelectorTextContains('ul li', self::INVALID_EMAIL_ERROR_MESSAGE);
     }
 
     public function testCreateUserWithTooLongFields(): void
@@ -104,8 +120,11 @@ class UserControllerTest extends WebTestCase
 
         // Then the "Alice" user creation fails
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertSelectorTextContains('h1', 'Create User');
-        self::assertSelectorTextContains('ul li', 'This value is too long. It should have 255 characters or less.');
+
+        $translatedCreateText = self::getTranslatedActionText('create', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedCreateText);
+        self::assertSelectorTextContains('ul li', self::TOO_LONG_STRING_ERROR_MESSAGE);
     }
 
     public function testShowUser(): void
@@ -120,7 +139,10 @@ class UserControllerTest extends WebTestCase
         // Then the "John" user is successfully viewed
         self::assertRouteSame('user_show', ['id' => $testUser->getId()]);
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertSelectorTextContains('h1', 'User Details');
+
+        $translatedShowText = self::getTranslatedActionText('show', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedShowText);
         self::assertSelectorTextContains('td', $testUser->getFirstName());
     }
 
@@ -128,13 +150,15 @@ class UserControllerTest extends WebTestCase
     {
         // Given the "John" user is created
         $client = static::createClient();
-
         $testUser = static::getTestUser();
         $client->request(Request::METHOD_GET, '/user/edit/' . $testUser->getId());
 
         self::assertRouteSame('user_edit', ['id' => $testUser->getId()]);
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertSelectorTextContains('h1', 'Edit User');
+
+        $translatedEditText = self::getTranslatedActionText('edit', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedEditText);
         self::assertInputValueSame('user_form[email]', strval($testUser->getEmail()));
 
         // When we update the "John" user with the following data
@@ -153,8 +177,14 @@ class UserControllerTest extends WebTestCase
         $client->followRedirect();
         self::assertRouteSame('user_show', ['id' => $testUser->getId()]);
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertSelectorExists('div:contains("User Emma BROWN updated with success.")');
-        self::assertSelectorTextContains('h1', 'User Details');
+
+        $translatedSuccessMessage = self::getTranslatedSuccessMessage('edit', self::ENTITY_NAME, ['Emma', 'BROWN']);
+
+        self::assertSelectorExists("div:contains('$translatedSuccessMessage')");
+
+        $translatedShowText = self::getTranslatedActionText('show', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedShowText);
         self::assertSelectorTextContains('td', 'Emma');
     }
 
@@ -175,8 +205,10 @@ class UserControllerTest extends WebTestCase
 
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
-        self::assertSelectorTextContains('h1', 'Edit User');
-        self::assertSelectorTextContains('ul li', 'This value is not a valid email address');
+        $translatedEditText = self::getTranslatedActionText('edit', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedEditText);
+        self::assertSelectorTextContains('ul li', self::INVALID_EMAIL_ERROR_MESSAGE);
     }
 
     public function testUpdateUserWithTooLongFields(): void
@@ -200,8 +232,10 @@ class UserControllerTest extends WebTestCase
 
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
-        self::assertSelectorTextContains('h1', 'Edit User');
-        self::assertSelectorTextContains('ul li', 'This value is too long. It should have 255 characters or less.');
+        $translatedEditText = self::getTranslatedActionText('edit', self::ENTITY_NAME);
+
+        self::assertSelectorTextContains('h1', $translatedEditText);
+        self::assertSelectorTextContains('ul li', self::TOO_LONG_STRING_ERROR_MESSAGE);
     }
 
     public function testUniqueEmailConstraintOnUpdate(): void
@@ -274,6 +308,9 @@ class UserControllerTest extends WebTestCase
         self::assertResponseRedirects();
         $client->followRedirect();
         self::assertRouteSame('user_list');
-        self::assertSelectorExists('div:contains("User John DOE deleted with success.")');
+
+        $translatedSuccessMessage = self::getTranslatedSuccessMessage('delete', self::ENTITY_NAME, ['John', 'DOE']);
+
+        self::assertSelectorExists("div:contains('$translatedSuccessMessage')");
     }
 }
