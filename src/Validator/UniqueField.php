@@ -19,7 +19,7 @@ class UniqueField extends Constraint
         parent::__construct($options, $groups, $payload);
     }
 
-    public string $message = 'The value "{{ value }}" is already used.';
+    public string $message = 'unique_field_value';
 
     public function getTargets(): array|string
     {
