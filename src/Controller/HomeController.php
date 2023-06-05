@@ -24,7 +24,7 @@ final class HomeController extends AbstractController
     use PaginationTrait;
     use SuccessMessageTrait;
 
-    #[Route('/homes', name: 'home_list', methods: [Request::METHOD_GET])]
+    #[Route('/{_locale}/homes', name: 'home_list', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET])]
     public function index(Request $request, HomeRepository $homeRepository): Response
     {
         $paginationData = $this->getPaginationData($request, $homeRepository);
@@ -42,7 +42,7 @@ final class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/home/{id}', name: 'home_show', requirements: ['id' => Requirement::UUID_V7], methods: [Request::METHOD_GET])]
+    #[Route('/{_locale}/home/{id}', name: 'home_show', requirements: ['id' => Requirement::UUID_V7 , '_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET])]
     public function show(Home $home): Response
     {
         return $this->render('home/show.html.twig', [
@@ -50,7 +50,7 @@ final class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/home/create', name: 'home_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    #[Route('/{_locale}/home/create', name: 'home_create', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(Request $request, HomeCreatorInterface $homeCreator, TranslatorInterface $translator): Response
     {
         $homeInput = new HomeInput();
@@ -78,7 +78,7 @@ final class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/home/edit/{id}', name: 'home_edit', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    #[Route('/{_locale}/home/edit/{id}', name: 'home_edit', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function edit(Home $home, Request $request, HomeEditorInterface $homeEditor, TranslatorInterface $translator): Response
     {
         $homeInput = HomeInput::createInputForUpdate($home);
@@ -106,7 +106,7 @@ final class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/home/delete/{id}', name: 'home_delete', methods: [Request::METHOD_POST])]
+    #[Route('/{_locale}/home/delete/{id}', name: 'home_delete', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_POST])]
     public function remove(Home $home, Request $request, HomeRemoverInterface $homeRemover, TranslatorInterface $translator): Response
     {
         $submittedToken = $request->request->get('token');

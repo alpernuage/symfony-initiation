@@ -24,7 +24,7 @@ class UserController extends AbstractController
     use PaginationTrait;
     use SuccessMessageTrait;
 
-    #[Route('/users', name: 'user_list', methods: [Request::METHOD_GET])]
+    #[Route('/{_locale}/users', name: 'user_list', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET])]
     public function index(Request $request, UserRepository $userRepository): Response
     {
         $paginationData = $this->getPaginationData($request, $userRepository);
@@ -42,7 +42,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/user/{id}', name: 'user_show', requirements: ['id' => Requirement::UUID_V7], methods: [Request::METHOD_GET])]
+    #[Route('/{_locale}/user/{id}', name: 'user_show', requirements: ['id' => Requirement::UUID_V7, '_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET])]
     public function show(User $user): Response
     {
         return $this->render('user/show.html.twig', [
@@ -50,7 +50,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/user/create', name: 'user_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    #[Route('/{_locale}/user/create', name: 'user_create', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(Request $request, UserCreatorInterface $userCreator, TranslatorInterface $translator): Response
     {
         $userInput = new UserInput();
@@ -78,7 +78,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/user/delete/{id}', name: 'user_delete', methods: [Request::METHOD_POST])]
+    #[Route('/{_locale}/user/delete/{id}', name: 'user_delete', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_POST])]
     public function remove(User $user, Request $request, UserRemoverInterface $userRemover, TranslatorInterface $translator): Response
     {
         /** @var string $submittedToken */
@@ -102,7 +102,7 @@ class UserController extends AbstractController
         return $this->redirectToRoute('user_list');
     }
 
-    #[Route('/user/edit/{id}', name: 'user_edit', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    #[Route('/{_locale}/user/edit/{id}', name: 'user_edit', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function edit(User $user, Request $request, UserEditorInterface $userEditor, TranslatorInterface $translator): Response
     {
         $userInput = UserInput::createInputForUpdate($user);

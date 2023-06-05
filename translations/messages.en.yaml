@@ -1,0 +1,45 @@
+list: List of
+id: ID
+confirm_delete: Are you sure you want to delete this %entity% ?
+no_user_found: No user found
+no_home_found: No home found
+actions_title: Actions
+entity: Entity
+
+labels:
+  user: User
+  home: Home
+  users: Users
+  homes: Homes
+
+user:
+  first_name: First Name
+  last_name: Last Name
+  email: Email
+
+home:
+  address: Address
+  city: City
+  zip_code: Zip code
+  country: Country
+  currently_occupied: Currently Occupied ?
+
+actions:
+  show: "%entity% Details"
+  create: Create %entity%
+  edit: Edit %entity%
+  remove: Remove %entity%
+  cancel: Cancel and return to the %entity% list
+
+pagination:
+  previous: Previous
+  next: Next
+
+success:
+  create: '%entity% %s %s created with success.'
+  edit: '%entity% %s %s updated with success.'
+  delete: '%entity% %s %s removed with success.'
+
+buttons:
+  save: Save
+  return: Return to the %entity% list
