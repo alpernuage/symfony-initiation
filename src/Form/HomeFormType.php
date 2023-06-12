@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Domain\Home\HomeInput;
 use App\Entity\User;
+use App\EventSubscriber\HomeSubscriber;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -48,6 +49,7 @@ class HomeFormType extends AbstractType
                     return $user->getFirstName() . ' ' . $user->getLastName();
                 },
             ])
-            ->add('save', SubmitType::class, ['label' => 'buttons.save']);
+            ->add('save', SubmitType::class, ['label' => 'buttons.save'])
+            ->addEventSubscriber(new HomeSubscriber());
     }
 }

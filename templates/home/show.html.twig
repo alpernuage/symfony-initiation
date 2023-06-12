@@ -2,6 +2,11 @@
 {% block title %}{{ 'actions.show'|trans({'%entity%': 'labels.home'|trans}) }}{% endblock %}
 {% block body %}
     <h1>{{ 'actions.show'|trans({'%entity%': 'labels.home'|trans}) }}</h1>
+    <strong>Updated At: </strong><code>{{ home.updatedAt|date('Y-m-d H:i:s') }}</code>
+
+    {% if countryName is defined and countryName is not null %}
+        <p><strong>{{ 'home.country'|trans }}:</strong> {{ home.country|country_name }}</p>
+    {% endif %}
 
     <table>
         <tr>

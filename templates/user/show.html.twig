@@ -2,6 +2,7 @@
 {% block title %}{{ 'actions.show'|trans({'%entity%': 'labels.user'|trans}) }}{% endblock %}
 {% block body %}
     <h1>{{ 'actions.show'|trans({'%entity%': 'labels.user'|trans}) }}</h1>
+    <strong>Updated At: </strong><code>{{ user.updatedAt|date('Y-m-d H:i:s') }}</code>
 
     <table>
         <tr>
@@ -22,5 +23,17 @@
 
     {% for message in app.flashes('success') %}
         <div class="flash-notice">{{ message|trans }}</div>
+    {% endfor %}
+
+    {% for message in app.flashes('create-listener') %}
+        <div>{{ message }}</div>
+    {% endfor %}
+
+    {% for message in app.flashes('update-listener') %}
+        <div>{{ message }}</div>
+    {% endfor %}
+
+    {% for message in app.flashes('recently-visited-pages') %}
+        <div>{{ message }}</div>
     {% endfor %}
 {% endblock %}

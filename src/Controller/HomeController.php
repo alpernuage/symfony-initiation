@@ -42,11 +42,12 @@ final class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/{_locale}/home/{id}', name: 'home_show', requirements: ['id' => Requirement::UUID_V7 , '_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET])]
-    public function show(Home $home): Response
+    #[Route('/{_locale}/home/{id}', name: 'home_show', requirements: ['id' => Requirement::UUID_V7, '_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET])]
+    public function show(Request $request, Home $home): Response
     {
         return $this->render('home/show.html.twig', [
             'home' => $home,
+            'countryName' => $request->attributes->get('countryName')
         ]);
     }
 
