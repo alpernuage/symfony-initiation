@@ -42,4 +42,5 @@ success:
 
 buttons:
   save: Enregistrer
+  go_to: Aller à la page de liste %entity%
   return: Retourner à la page de liste %entity%

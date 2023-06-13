@@ -1,6 +1,8 @@
 {% extends 'base.html.twig' %}
 {% block body %}
     {% apply spaceless %}
+        <a href="{{ path('home_list') }}" class="btn btn-primary">{{ 'buttons.go_to'|trans({'%entity%': 'labels.homes'|trans}) }}</a>
+
         <h1>{{ 'list'|trans }} {{ 'labels.users'|trans }}</h1>
 
         <a href="{{ path('user_create') }}" class="btn btn-primary">{{ 'actions.create'|trans({'%entity%': 'labels.user'|trans}) }}</a>

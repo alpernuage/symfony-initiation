@@ -42,4 +42,5 @@ success:
 
 buttons:
   save: Save
+  go_to: Go to the %entity% list
   return: Return to the %entity% list
