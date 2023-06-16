@@ -48,7 +48,7 @@ class HomeListenerTest extends WebTestCase
         self::assertRouteSame('home_show', ['id' => $home->getId()]);
         self::assertTrue(in_array($callable, $listeners));
         self::assertTrue($dispatcher->hasListeners(KernelEvents::CONTROLLER));
-        self::assertSelectorTextContains('strong', $countryLabel);
+        self::assertSelectorTextContains('p strong', $countryLabel);
         self::assertSelectorTextContains('p', $displayedCountryName);
     }
 }
