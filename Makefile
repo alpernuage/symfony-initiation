@@ -37,6 +37,11 @@ install: ## 🚀 Project installation
 install: ssl build start vendor
 	echo "${YELLOW}The application is available at the url: SERVER_NAME$(RESET)";
 
+## —— 🖥️ Console ——
+.PHONY: console
+console: ## Execute console command to accept arguments that will complete the command
+	$(CONSOLE) $(filter-out $@,$(MAKECMDGOALS))
+
 ## —— 🎩 Composer ——
 .PHONY: composer
 composer: ## Execute composer command
