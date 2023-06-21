@@ -356,19 +356,57 @@ class UserControllerTest extends WebTestCase
     /**
      * @dataProvider languagesProvider
      */
-    public function testRemoveUser(string $locale): void
+    public function testSoftRemoveUser(string $locale): void
     {
         // Given the existing "John" user with the email address "test.user@example.com"
         $client = static::createClient();
         $testUser = static::getTestUser();
 
-        // When we remove the "John" user
+        self::assertNull($testUser->getDeletedAt());
+
+        // When we soft remove the "John" user
         $crawler = $client->request(Request::METHOD_GET, sprintf('/%s/users', $locale));
         $form = $crawler->filter('form[action="/' . $locale . '/user/delete/' . $testUser->getId() . '"]')->form();
         $client->submit($form);
 
-        // Then the "John" user is removed
+        // Then the "John" user is soft removed
         self::assertRouteSame('user_delete', ['id' => $testUser->getId()]);
+
+        /** @var User $softDeletedUser */
+        $softDeletedUser = $this->getUserRepository()->find($testUser->getId());
+
+        self::assertNotNull($softDeletedUser->getDeletedAt());
+        self::assertResponseRedirects();
+        $client->followRedirect();
+        self::assertRouteSame('user_list');
+
+        $entityName = self::getTranslatedEntityName($locale, 'user');
+        $translatedSuccessMessage = self::getTranslatedSuccessMessage('delete', $entityName, ['John', 'DOE'], $locale);
+
+        self::assertSelectorExists("div:contains('$translatedSuccessMessage')");
+    }
+
+    /**
+     * @dataProvider languagesProvider
+     */
+    public function testHardRemoveUser(string $locale): void
+    {
+        // Given the existing "John" user with the email address "test.user@example.com"
+        $client = static::createClient();
+        $testUser = static::getTestUser();
+
+        // When we soft remove the "John" user
+        $crawler = $client->request(Request::METHOD_GET, sprintf('/%s/users', $locale));
+        $form = $crawler->filter('form[action="/' . $locale . '/user/delete/' . $testUser->getId() . '"]')->form();
+        $client->submit($form);
+
+        // Then we hard remove the "John" user
+        $crawler = $client->request(Request::METHOD_GET, sprintf('/%s/deleted_users', $locale));
+        $form = $crawler->filter('form[action="/' . $locale . '/user/hard_delete/' . $testUser->getId() . '"]')->form();
+        $client->submit($form);
+
+        // Then the "John" user is hard removed
+        self::assertRouteSame('user_hard_delete', ['id' => $testUser->getId()]);
         self::assertNull($this->getUserRepository()->find($testUser->getId()));
 
         self::assertResponseRedirects();
@@ -377,6 +415,48 @@ class UserControllerTest extends WebTestCase
 
         $entityName = self::getTranslatedEntityName($locale, 'user');
         $translatedSuccessMessage = self::getTranslatedSuccessMessage('delete', $entityName, ['John', 'DOE'], $locale);
+
+        self::assertSelectorExists("div:contains('$translatedSuccessMessage')");
+    }
+
+    /**
+     * @dataProvider languagesProvider
+     */
+    public function testRestoreUser(string $locale): void
+    {
+        // Given the existing "John" user with the email address "test.user@example.com"
+        $client = static::createClient();
+        $testUser = static::getTestUser();
+
+        self::assertNull($testUser->getDeletedAt());
+
+        // When we soft remove the "John" user
+        $crawler = $client->request(Request::METHOD_GET, sprintf('/%s/users', $locale));
+        $form = $crawler->filter('form[action="/' . $locale . '/user/delete/' . $testUser->getId() . '"]')->form();
+        $client->submit($form);
+
+        /** @var User $softDeletedUser */
+        $softDeletedUser = $this->getUserRepository()->find($testUser->getId());
+
+        self::assertNotNull($softDeletedUser->getDeletedAt());
+
+        // Then we restore the "John" user
+        $crawler = $client->request(Request::METHOD_GET, sprintf('/%s/deleted_users', $locale));
+        $form = $crawler->filter('form[action="/' . $locale . '/user/restore/' . $testUser->getId() . '"]')->form();
+        $client->submit($form);
+
+        // Then the "John" user is restored
+        /** @var User $restoredUser */
+        $restoredUser = $this->getUserRepository()->find($testUser->getId());
+
+        self::assertRouteSame('user_restore', ['id' => $testUser->getId()]);
+        self::assertNull($restoredUser->getDeletedAt());
+        self::assertResponseRedirects();
+        $client->followRedirect();
+        self::assertRouteSame('user_list');
+
+        $entityName = self::getTranslatedEntityName($locale, 'user');
+        $translatedSuccessMessage = self::getTranslatedSuccessMessage('restore', $entityName, ['John', 'DOE'], $locale);
 
         self::assertSelectorExists("div:contains('$translatedSuccessMessage')");
     }

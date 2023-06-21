@@ -205,15 +205,16 @@ class HomeControllerTest extends WebTestCase
     /**
      * @dataProvider languagesProvider
      */
-    public function testRemoveHome(string $locale): void
+    public function testSoftRemoveHome(string $locale): void
     {
         // Given "random existing home"
         $client = static::createClient();
+        /** @var Home $home */
         $home = $this->getHomeRepository()->findOneBy([]);
 
-        self::assertInstanceOf(Home::class, $home);
+        self::assertNull($home->getDeletedAt());
 
-        // When we remove the "random existing home"
+        // When we soft remove the "random existing home"
         $client->request(Request::METHOD_GET, sprintf('/%s/homes', $locale));
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -223,8 +224,50 @@ class HomeControllerTest extends WebTestCase
 
         $client->submitForm($translatedRemoveButtonText);
 
-        // Then the "random existing home" is removed
+        // Then the "random existing home" is soft removed
+        /** @var Home $softDeletedHome */
+        $softDeletedHome = $this->getHomeRepository()->find($home->getId());
+
         self::assertRouteSame('home_delete', ['id' => $home->getId()]);
+        self::assertNotNull($softDeletedHome->getDeletedAt());
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+        self::assertResponseRedirects();
+        $client->followRedirect();
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+        self::assertRouteSame('home_list');
+
+        $translatedSuccessMessage = self::getTranslatedSuccessMessage('delete', $entityName, [$home->getAddress(), $home->getCity()], $locale);
+
+        self::assertSelectorTextContains(
+            'div.flash-notice',
+            $translatedSuccessMessage
+        );
+    }
+
+    /**
+     * @dataProvider languagesProvider
+     */
+    public function testHardRemoveHome(string $locale): void
+    {
+        // Given "random existing home"
+        $client = static::createClient();
+        /** @var Home $home */
+        $home = $this->getHomeRepository()->findOneBy([]);
+
+        // When we soft remove the "random existing home"
+        $client->request(Request::METHOD_GET, sprintf('/%s/homes', $locale));
+        $entityName = self::getTranslatedEntityName($locale, 'home');
+        $translatedRemoveButtonText = self::getTranslatedActionText('remove', $entityName, $locale);
+        $client->submitForm($translatedRemoveButtonText);
+
+        // Then we hard remove the "random existing home"
+        $client->request(Request::METHOD_GET, sprintf('/%s/deleted_homes', $locale));
+        $entityName = self::getTranslatedEntityName($locale, 'home');
+        $translatedRemoveButtonText = self::getTranslatedActionText('hard_remove', $entityName, $locale);
+        $client->submitForm($translatedRemoveButtonText);
+
+        // Then the "random existing home" is hard removed
+        self::assertRouteSame('home_hard_delete', ['id' => $home->getId()]);
         self::assertNull($this->getHomeRepository()->find($home->getId()));
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
         self::assertResponseRedirects();
@@ -233,6 +276,55 @@ class HomeControllerTest extends WebTestCase
         self::assertRouteSame('home_list');
 
         $translatedSuccessMessage = self::getTranslatedSuccessMessage('delete', $entityName, [$home->getAddress(), $home->getCity()], $locale);
+
+        self::assertSelectorTextContains(
+            'div.flash-notice',
+            $translatedSuccessMessage
+        );
+    }
+
+    /**
+     * @dataProvider languagesProvider
+     */
+    public function testRestoreHome(string $locale): void
+    {
+        // Given "random existing home"
+        $client = static::createClient();
+        /** @var Home $home */
+        $home = $this->getHomeRepository()->findOneBy([]);
+
+        self::assertNull($home->getDeletedAt());
+
+        // When we soft remove the "random existing home"
+        $client->request(Request::METHOD_GET, sprintf('/%s/homes', $locale));
+        $entityName = self::getTranslatedEntityName($locale, 'home');
+        $translatedRemoveButtonText = self::getTranslatedActionText('remove', $entityName, $locale);
+        $client->submitForm($translatedRemoveButtonText);
+
+        /** @var Home $softDeletedHome */
+        $softDeletedHome = $this->getHomeRepository()->find($home->getId());
+
+        self::assertNotNull($softDeletedHome->getDeletedAt());
+
+        // Then we restore the "random existing home"
+        $client->request(Request::METHOD_GET, sprintf('/%s/deleted_homes', $locale));
+        $entityName = self::getTranslatedEntityName($locale, 'home');
+        $translatedRestoreButtonText = self::getTranslatedActionText('restore', $entityName, $locale);
+        $client->submitForm($translatedRestoreButtonText);
+
+        // Then the "random existing home" is restored
+        /** @var Home $restoredHome */
+        $restoredHome = $this->getHomeRepository()->find($home->getId());
+
+        self::assertRouteSame('home_restore', ['id' => $home->getId()]);
+        self::assertNull($restoredHome->getDeletedAt());
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+        self::assertResponseRedirects();
+        $client->followRedirect();
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+        self::assertRouteSame('home_list');
+
+        $translatedSuccessMessage = self::getTranslatedSuccessMessage('restore', $entityName, [$home->getAddress(), $home->getCity()], $locale);
 
         self::assertSelectorTextContains(
             'div.flash-notice',
