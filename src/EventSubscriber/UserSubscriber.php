@@ -41,6 +41,11 @@ class UserSubscriber implements EventSubscriberInterface
     {
         /** @var Session $session */
         $session = $event->getRequest()->getSession();
+        $requestUri = $event->getRequest()->getRequestUri();
+
+        if (str_contains($requestUri, '/api')) {
+            return;
+        }
 
         /** @var array<string> $controllerCallable */
         $controllerCallable = $event->getController();
