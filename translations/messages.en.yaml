@@ -10,6 +10,7 @@ labels:
   user: User
   home: Home
   users: Users
+  deleted_homes: Deleted Homes
   deleted_users: Deleted Users
   homes: Homes
 

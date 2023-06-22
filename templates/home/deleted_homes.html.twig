@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {% apply spaceless %}
+        <h1>{{ 'list'|trans }} {{ 'labels.deleted_homes'|trans }}</h1>
+
+        {% include 'home/_home_list.html.twig' with {'homes': homes, 'show_details_edit_remove_buttons': false} %}
+
+        <form action="{{ path('home_list') }}">
+            <select name="limit" onchange="this.form.submit()">
+                <option value="5" {% if limit == 5 %}selected{% endif %}>5</option>
+                <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
+                <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
+            </select>
+        </form>
+
+        {% if pages_count > 1 %}
+            <div class="pagination">
+                {% if current_page > 1 %}
+                    <a href="{{ path('home_list', {'page': current_page - 1, 'limit': limit}) }}">{{ 'pagination.previous'|trans }}</a>
+                {% endif %}
+                {% for page in 1..pages_count %}
+                    {% if page == current_page %}
+                        <span>{{ page }}</span>
+                    {% else %}
+                        <a href="{{ path('home_list', {'page': page, 'limit': limit}) }}">{{ page }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if current_page < pages_count %}
+                    <a href="{{ path('home_list', {'page': current_page + 1, 'limit': limit}) }}">{{ 'pagination.next'|trans }}</a>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% for message in app.flashes('success') %}
+            <div class="flash-notice">{{ message|trans }}</div>
+        {% endfor %}
+
+        <a href="{{ path('home_list') }}">{{ 'actions.cancel'|trans({'%entity%': 'labels.home'|trans}) }}</a>
+
+    {% endapply %}
+{% endblock %}

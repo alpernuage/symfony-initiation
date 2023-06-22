@@ -9,8 +9,9 @@ entity: Entité
 labels:
   user: Utilisateur
   home: Maison
-  deleted_users: Utilisateurs supprimés
   users: Utilisateurs
+  deleted_users: Utilisateurs supprimés
+  deleted_homes: Maisons supprimés
   homes: Maisons
 
 user:

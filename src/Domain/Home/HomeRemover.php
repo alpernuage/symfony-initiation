@@ -13,6 +13,12 @@ class HomeRemover implements HomeRemoverInterface
 
     public function remove(Home $home): void
     {
+        $home->setDeletedAt(new \DateTime());
+        $this->entityManager->flush();
+    }
+
+        public function hardRemove(Home $home): void
+    {
         $this->entityManager->remove($home);
         $this->entityManager->flush();
     }

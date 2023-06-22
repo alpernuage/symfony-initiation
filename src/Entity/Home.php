@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\HomeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
@@ -13,6 +14,7 @@ use Symfony\Component\Uid\Uuid;
 class Home
 {
     use TimestampableEntity;
+    use SoftDeleteableEntity;
 
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME)]

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Domain\Home\HomeRestorerInterface;
 use App\Domain\PaginationTrait;
 use App\Domain\SuccessMessageTrait;
 use App\Entity\Home;
@@ -29,12 +30,27 @@ final class HomeController extends AbstractController
     {
         $paginationData = $this->getPaginationData($request, $homeRepository);
         $homes = $homeRepository->findBy(
-            criteria: [],
+            criteria: ['deletedAt' => null],
             limit: $paginationData['limit'],
             offset: ($paginationData['current_page'] - 1) * $paginationData['limit']
         );
 
         return $this->render('home/index.html.twig', [
+            'homes' => $homes,
+            'current_page' => $paginationData['current_page'],
+            'pages_count' => $paginationData['pages_count'],
+            'limit' => $paginationData['limit'],
+        ]);
+    }
+
+    #[Route('/{_locale}/deleted_homes', name: 'deleted_homes', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET])]
+    public function showDeletedHomes(Request $request, HomeRepository $homeRepository): Response
+    {
+        $paginationData = $this->getPaginationData($request, $homeRepository);
+        $queryBuilder = $homeRepository->findDeletedHomesPaginated($paginationData['current_page'], $paginationData['limit']);
+        $homes = $queryBuilder->getResult();
+
+        return $this->render('home/deleted_homes.html.twig', [
             'homes' => $homes,
             'current_page' => $paginationData['current_page'],
             'pages_count' => $paginationData['pages_count'],
@@ -112,7 +128,7 @@ final class HomeController extends AbstractController
     {
         $submittedToken = $request->request->get('token');
 
-        if (!$this->isCsrfTokenValid('delete-item', $submittedToken)) {
+        if (!$this->isCsrfTokenValid('soft-delete-item', $submittedToken)) {
             throw new InvalidCsrfTokenException("Invalid CSRF token.");
         }
 
@@ -122,6 +138,54 @@ final class HomeController extends AbstractController
             'success',
             sprintf(
                 $this->getSuccessMessage('delete', 'home'),
+                $home->getAddress(),
+                $home->getCity(),
+            )
+        );
+
+        return $this->redirectToRoute('home_list');
+    }
+
+    #[Route('/{_locale}/home/hard_delete/{id}', name: 'home_hard_delete', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_POST])]
+    public function hardRemove(Home $home, Request $request, HomeRemoverInterface $homeRemover, TranslatorInterface $translator): Response
+    {
+        /** @var string $submittedToken */
+        $submittedToken = $request->request->get('token', "");
+
+        if (!$this->isCsrfTokenValid('hard-delete-item', $submittedToken)) {
+            throw new InvalidCsrfTokenException("Invalid CSRF token.");
+        }
+
+        $homeRemover->hardRemove($home);
+        $this->setTranslator($translator);
+        $this->addFlash(
+            'success',
+            sprintf(
+                $this->getSuccessMessage('delete', 'home'),
+                $home->getAddress(),
+                $home->getCity(),
+            )
+        );
+
+        return $this->redirectToRoute('home_list');
+    }
+
+    #[Route('/{_locale}/home/restore/{id}', name: 'home_restore', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_POST])]
+    public function restore(Home $home, Request $request, HomeRestorerInterface $homeRestorer, TranslatorInterface $translator): Response
+    {
+        /** @var string $submittedToken */
+        $submittedToken = $request->request->get('token', "");
+
+        if (!$this->isCsrfTokenValid('restore-item', $submittedToken)) {
+            throw new InvalidCsrfTokenException("Invalid CSRF token.");
+        }
+
+        $homeRestorer->restore($home);
+        $this->setTranslator($translator);
+        $this->addFlash(
+            'success',
+            sprintf(
+                $this->getSuccessMessage('restore', 'home'),
                 $home->getAddress(),
                 $home->getCity(),
             )
