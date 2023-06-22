@@ -30,6 +30,8 @@ actions:
   create: Créer %entity%
   edit: Modifier %entity%
   remove: Supprimer %entity%
+  hard_remove: Supprimer dur %entity%
+  restore: Restaurer %entity%
   cancel: Annuler et retourner à la page de liste %entity%
 
 pagination:
@@ -39,9 +41,11 @@ pagination:
 success:
   create: '%entity% %s %s a été créé avec succès.'
   edit: '%entity% %s %s a été mis à jour avec succès.'
+  restore: '%entity% %s %s a été restauré avec succès.'
   delete: '%entity% %s %s a été supprimé avec succès.'
 
 buttons:
   save: Enregistrer
   go_to: Aller à la page de liste %entity%
+  go_to_deleted: Aller à la page de liste %entity% supprimés
   return: Retourner à la page de liste %entity%
