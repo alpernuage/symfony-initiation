@@ -13,6 +13,12 @@ class UserRemover implements UserRemoverInterface
 
     public function remove(User $user): void
     {
+        $user->setDeletedAt(new \DateTime());
+        $this->entityManager->flush();
+    }
+
+    public function hardRemove(User $user): void
+    {
         $this->entityManager->remove($user);
         $this->entityManager->flush();
     }

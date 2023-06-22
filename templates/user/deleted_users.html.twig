@@ -1,13 +1,9 @@
 {% extends 'base.html.twig' %}
 {% block body %}
     {% apply spaceless %}
-        <a href="{{ path('home_list') }}" class="btn btn-primary">{{ 'buttons.go_to'|trans({'%entity%': 'labels.homes'|trans}) }}</a>
+        <h1>{{ 'list'|trans }} {{ 'labels.deleted_users'|trans }}</h1>
 
-        <h1>{{ 'list'|trans }} {{ 'labels.users'|trans }}</h1>
-
-        <a href="{{ path('user_create') }}" class="btn btn-primary">{{ 'actions.create'|trans({'%entity%': 'labels.user'|trans}) }}</a>
-
-        {% include 'user/_user_list.html.twig' with {'users': users, 'show_details_edit_remove_buttons': true} %}
+        {% include 'user/_user_list.html.twig' with {'user s': users, 'show_details_edit_remove_buttons': false} %}
 
         <form action="{{ path('user_list') }}">
             <select name="limit" onchange="this.form.submit()">
@@ -35,10 +31,11 @@
             </div>
         {% endif %}
 
-        <a href="{{ path('deleted_users') }}" class="btn btn-primary">{{ 'buttons.go_to_deleted'|trans({'%entity%': 'labels.user'|trans}) }}</a>
-
         {% for message in app.flashes('success') %}
             <div class="flash-notice">{{ message|trans }}</div>
         {% endfor %}
+
+        <a href="{{ path('user_list') }}">{{ 'actions.cancel'|trans({'%entity%': 'labels.user'|trans}) }}</a>
+
     {% endapply %}
 {% endblock %}

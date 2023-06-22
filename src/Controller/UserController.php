@@ -8,6 +8,7 @@ use App\Domain\User\UserCreatorInterface;
 use App\Domain\User\UserEditorInterface;
 use App\Domain\User\UserInput;
 use App\Domain\User\UserRemoverInterface;
+use App\Domain\User\UserRestorerInterface;
 use App\Entity\User;
 use App\Form\UserFormType;
 use App\Repository\UserRepository;
@@ -29,12 +30,27 @@ class UserController extends AbstractController
     {
         $paginationData = $this->getPaginationData($request, $userRepository);
         $users = $userRepository->findBy(
-            criteria: [],
+            criteria: ['deletedAt' => NULL],
             limit: $paginationData['limit'],
             offset: ($paginationData['current_page'] - 1) * $paginationData['limit']
         );
 
         return $this->render('user/index.html.twig', [
+            'users' => $users,
+            'current_page' => $paginationData['current_page'],
+            'pages_count' => $paginationData['pages_count'],
+            'limit' => $paginationData['limit'],
+        ]);
+    }
+
+    #[Route('/{_locale}/deleted_users', name: 'deleted_users', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET])]
+    public function showDeletedUsers(Request $request, UserRepository $userRepository): Response
+    {
+        $paginationData = $this->getPaginationData($request, $userRepository);
+        $queryBuilder = $userRepository->findDeletedUsersPaginated($paginationData['current_page'], $paginationData['limit']);
+        $users = $queryBuilder->getResult();
+
+        return $this->render('user/deleted_users.html.twig', [
             'users' => $users,
             'current_page' => $paginationData['current_page'],
             'pages_count' => $paginationData['pages_count'],
@@ -78,30 +94,6 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/{_locale}/user/delete/{id}', name: 'user_delete', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_POST])]
-    public function remove(User $user, Request $request, UserRemoverInterface $userRemover, TranslatorInterface $translator): Response
-    {
-        /** @var string $submittedToken */
-        $submittedToken = $request->request->get('token', "");
-
-        if (!$this->isCsrfTokenValid('delete-item', $submittedToken)) {
-            throw new InvalidCsrfTokenException("Invalid CSRF token.");
-        }
-
-        $userRemover->remove($user);
-        $this->setTranslator($translator);
-        $this->addFlash(
-            'success',
-            sprintf(
-                $this->getSuccessMessage('delete', 'user'),
-                $user->getFirstName(),
-                $user->getLastName(),
-            )
-        );
-
-        return $this->redirectToRoute('user_list');
-    }
-
     #[Route('/{_locale}/user/edit/{id}', name: 'user_edit', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function edit(User $user, Request $request, UserEditorInterface $userEditor, TranslatorInterface $translator): Response
     {
@@ -128,5 +120,77 @@ class UserController extends AbstractController
         return $this->render('user/edit.html.twig', [
             'edit_user_form' => $form,
         ]);
+    }
+
+    #[Route('/{_locale}/user/delete/{id}', name: 'user_delete', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_POST])]
+    public function remove(User $user, Request $request, UserRemoverInterface $userRemover, TranslatorInterface $translator): Response
+    {
+        /** @var string $submittedToken */
+        $submittedToken = $request->request->get('token', "");
+
+        if (!$this->isCsrfTokenValid('soft-delete-item', $submittedToken)) {
+            throw new InvalidCsrfTokenException("Invalid CSRF token.");
+        }
+
+        $userRemover->remove($user);
+        $this->setTranslator($translator);
+        $this->addFlash(
+            'success',
+            sprintf(
+                $this->getSuccessMessage('delete', 'user'),
+                $user->getFirstName(),
+                $user->getLastName(),
+            )
+        );
+
+        return $this->redirectToRoute('user_list');
+    }
+
+    #[Route('/{_locale}/user/hard_delete/{id}', name: 'user_hard_delete', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_POST])]
+    public function hardRemove(User $user, Request $request, UserRemoverInterface $userRemover, TranslatorInterface $translator): Response
+    {
+        /** @var string $submittedToken */
+        $submittedToken = $request->request->get('token', "");
+
+        if (!$this->isCsrfTokenValid('hard-delete-item', $submittedToken)) {
+            throw new InvalidCsrfTokenException("Invalid CSRF token.");
+        }
+
+        $userRemover->hardRemove($user);
+        $this->setTranslator($translator);
+        $this->addFlash(
+            'success',
+            sprintf(
+                $this->getSuccessMessage('delete', 'user'),
+                $user->getFirstName(),
+                $user->getLastName(),
+            )
+        );
+
+        return $this->redirectToRoute('user_list');
+    }
+
+    #[Route('/{_locale}/user/restore/{id}', name: 'user_restore', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_POST])]
+    public function restore(User $user, Request $request, UserRestorerInterface $userRestorer, TranslatorInterface $translator): Response
+    {
+        /** @var string $submittedToken */
+        $submittedToken = $request->request->get('token', "");
+
+        if (!$this->isCsrfTokenValid('restore-item', $submittedToken)) {
+            throw new InvalidCsrfTokenException("Invalid CSRF token.");
+        }
+
+        $userRestorer->restore($user);
+        $this->setTranslator($translator);
+        $this->addFlash(
+            'success',
+            sprintf(
+                $this->getSuccessMessage('restore', 'user'),
+                $user->getFirstName(),
+                $user->getLastName(),
+            )
+        );
+
+        return $this->redirectToRoute('user_list');
     }
 }
