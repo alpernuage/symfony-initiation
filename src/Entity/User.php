@@ -2,16 +2,22 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[ApiResource(
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']],
+)]
 class User
 {
     use TimestampableEntity;
@@ -22,12 +28,15 @@ class User
     private Uuid $id;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
+    #[Groups(['user:read', 'user:write', 'home:item:get'])]
     private string $firstName;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
+    #[Groups(['user:read', 'user:write', 'home:item:get'])]
     private string $lastName;
 
     #[ORM\Column(type: Types::STRING, length: 320, nullable: true)]
+    #[Groups(['user:read', 'user:write', 'home:item:get'])]
     private ?string $email;
 
     public function __construct(string $firstName, string $lastName, ?string $email)
