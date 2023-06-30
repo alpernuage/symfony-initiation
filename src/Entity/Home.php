@@ -2,15 +2,54 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Serializer\Filter\PropertyFilter;
 use App\Repository\HomeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
+use function Symfony\Component\String\u;
 
 #[ORM\Entity(repositoryClass: HomeRepository::class)]
+#[ApiResource(
+    description: 'A home is a place where a user lives',
+    operations: [
+        new GetCollection(),
+        new Get(uriTemplate: '/home/{id}', normalizationContext: ['groups' => ['home:read', 'home:item:get']]),
+        new Post(uriTemplate: '/home/create'),
+        new Put(uriTemplate: '/home/edit/{id}'),
+    ],
+    formats: ['jsonld', 'json', 'html', 'jsonhal', 'csv' => ['text/csv']],
+    normalizationContext: ['groups' => ['home:read']],
+    denormalizationContext: ['groups' => ['home:write']],
+    paginationItemsPerPage: 10
+)]
+#[ApiResource(
+    uriTemplate: 'users/{user_id}/homes.{_format}',
+    shortName: "User's Homes",
+    operations: [new GetCollection()],
+    uriVariables: [
+        'user_id' => new Link(
+            toProperty: 'user',
+            fromClass: User::class,
+        )
+    ],
+    normalizationContext: ['groups' => ['home:read']],
+)]
+#[ApiFilter(PropertyFilter::class)]
+#[ApiFilter(SearchFilter::class, properties: ['user.lastName' => 'partial'])]
 class Home
 {
     use TimestampableEntity;
@@ -21,22 +60,30 @@ class Home
     private Uuid $id;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['home:read', 'home:write'])]
     private string $address;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['home:read', 'home:write'])]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private string $city;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['home:read', 'home:write'])]
     private string $zipCode;
 
     #[ORM\Column(type: Types::STRING, length: 2)]
+    #[Groups('home:write')]
     private string $country;
 
     #[ORM\Column(type: Types::BOOLEAN)]
+    #[Groups(['home:read', 'home:write'])]
+    #[ApiFilter(BooleanFilter::class)]
     private bool $currentlyOccupied;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['home:read', 'home:write'])]
     private User $user;
 
     public function __construct(string $address, string $city, string $zipCode, string $country, bool $currentlyOccupied, User $user)
@@ -63,6 +110,18 @@ class Home
     public function setAddress(string $address): void
     {
         $this->address = $address;
+    }
+
+    #[Groups('home:read')]
+    public function getShortAddress(): string
+    {
+        return u($this->address)->truncate(15, '...')->toString();
+    }
+
+    #[Groups('home:read')]
+    public function getFullAddress(): string
+    {
+        return $this->address . ' ' . $this->zipCode . ' ' . $this->city;
     }
 
     public function getCity(): string
