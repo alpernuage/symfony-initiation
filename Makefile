@@ -105,7 +105,7 @@ cache: ## 🧹 Clear Symfony cache
 ## —— 🔍 PHPStan ——
 .PHONY: phpstan
 phpstan: ## PHP Static Analysis Tool (https://github.com/phpstan/phpstan)
-	$(PHP) vendor/bin/phpstan
+	$(PHP) vendor/bin/phpstan --memory-limit=-1 analyse src
 
 ## —— 🔧 PHP CS Fixer ——
 .PHONY: fix-php-cs
@@ -146,6 +146,12 @@ test-fixtures: test-database
 .PHONY: test
 test: ## Run tests
 	$(PHP) vendor/bin/simple-phpunit
+
+test-filter: ## Run filtered tests
+	$(PHP) vendor/bin/simple-phpunit --filter $(filter-out $@,$(MAKECMDGOALS))
+
+testdox: ## Run tests with testdox output for clearer test result summary (https://docs.phpunit.de/en/10.2/attributes.html#testdox)
+	$(PHP) vendor/bin/simple-phpunit --testdox
 
 ## —— 🐱 Git ——
 .PHONY: pull
