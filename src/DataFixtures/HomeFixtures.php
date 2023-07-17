@@ -26,6 +26,17 @@ class HomeFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
         $users = $this->userRepository->findBy([], limit: 10);
+        $testUser = $this->userRepository->findOneBy(['email' => 'test.user@example.com']);
+        $testHome = new Home(
+            '1 rue de la Course',
+            'Aix-en-Provence',
+            '12345',
+            'FR',
+            true,
+            $testUser
+        );
+
+        $manager->persist($testHome);
 
         foreach ($users as $user) {
             for ($i = 0; $i < 3; $i++) {
