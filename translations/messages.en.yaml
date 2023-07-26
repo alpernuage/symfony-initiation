@@ -50,3 +50,6 @@ buttons:
   go_to: Go to the %entity% list
   go_to_deleted: Go to the deleted %entity% list
   return: Return to the %entity% list
+
+constraints:
+  unique_email_value: The value "%value%" is already used.

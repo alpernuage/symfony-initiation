@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Domain\PaginationTrait;
 use App\Domain\SuccessMessageTrait;
+use App\Domain\UniqueEmailTrait;
 use App\Domain\User\UserCreatorInterface;
 use App\Domain\User\UserEditorInterface;
 use App\Domain\User\UserInput;
@@ -22,6 +23,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserController extends AbstractController
 {
+    use UniqueEmailTrait;
     use PaginationTrait;
     use SuccessMessageTrait;
 
@@ -76,6 +78,16 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            if ($userInput->email !== null) {
+                $isEmailUnique = $this->isEmailUnique($form, $userInput);
+
+                if (!$isEmailUnique) {
+                    return $this->render('user/create.html.twig', [
+                        'create_user_form' => $form,
+                    ]);
+                }
+            }
+
             $user = $userCreator->create($userInput);
             $this->setTranslator($translator);
             $message = sprintf(
@@ -104,6 +116,16 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            if ($userInput->email !== $user->getEmail() && $userInput->email !== null) {
+                $isEmailUnique = $this->isEmailUnique($form, $userInput);
+
+                if (!$isEmailUnique) {
+                    return $this->render('user/edit.html.twig', [
+                        'edit_user_form' => $form
+                    ]);
+                }
+            }
+
             $userEditor->edit($user, $userInput);
             $this->setTranslator($translator);
             $message = sprintf(
@@ -118,7 +140,7 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/edit.html.twig', [
-            'edit_user_form' => $form,
+            'edit_user_form' => $form
         ]);
     }
 
