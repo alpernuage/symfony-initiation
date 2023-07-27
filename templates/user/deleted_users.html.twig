@@ -5,7 +5,7 @@
 
         {% include 'user/_user_list.html.twig' with {'user s': users, 'show_details_edit_remove_buttons': false} %}
 
-        <form action="{{ path('user_list') }}">
+        <form action="{{ path('deleted_users') }}">
             <select name="limit" onchange="this.form.submit()">
                 <option value="5" {% if limit == 5 %}selected{% endif %}>5</option>
                 <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
@@ -16,17 +16,17 @@
         {% if pages_count > 1 %}
             <div class="pagination">
                 {% if current_page > 1 %}
-                    <a href="{{ path('user_list', {'page': current_page - 1, 'limit': limit}) }}">{{ 'pagination.previous'|trans }}</a>
+                    <a href="{{ path('deleted_users', {'page': current_page - 1, 'limit': limit}) }}">{{ 'pagination.previous'|trans }}</a>
                 {% endif %}
                 {% for page in 1..pages_count %}
                     {% if page == current_page %}
                         <span>{{ page }}</span>
                     {% else %}
-                        <a href="{{ path('user_list', {'page': page, 'limit': limit}) }}">{{ page }}</a>
+                        <a href="{{ path('deleted_users', {'page': page, 'limit': limit}) }}">{{ page }}</a>
                     {% endif %}
                 {% endfor %}
                 {% if current_page < pages_count %}
-                    <a href="{{ path('user_list', {'page': current_page + 1, 'limit': limit}) }}">{{ 'pagination.next'|trans }}</a>
+                    <a href="{{ path('deleted_users', {'page': current_page + 1, 'limit': limit}) }}">{{ 'pagination.next'|trans }}</a>
                 {% endif %}
             </div>
         {% endif %}

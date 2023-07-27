@@ -48,8 +48,10 @@ class UserController extends AbstractController
     #[Route('/{_locale}/deleted_users', name: 'deleted_users', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET])]
     public function showDeletedUsers(Request $request, UserRepository $userRepository): Response
     {
-        $paginationData = $this->getPaginationData($request, $userRepository);
-        $queryBuilder = $userRepository->findDeletedUsersPaginated($paginationData['current_page'], $paginationData['limit']);
+        $paginationData = $this->getPaginationData($request, $userRepository, showDeleted: true);
+        $currentPage = intval($paginationData['current_page']);
+        $limit = intval($paginationData['limit']);
+        $queryBuilder = $userRepository->findDeletedUsersPaginated($currentPage, $limit);
         $users = $queryBuilder->getResult();
 
         return $this->render('user/deleted_users.html.twig', [

@@ -2,12 +2,18 @@
 
 namespace App\Domain;
 
-use Doctrine\ORM\EntityRepository;
+use App\Repository\DeletableEntityRepository;
 use Symfony\Component\HttpFoundation\Request;
 
 trait PaginationTrait
 {
-    protected function getPaginationData(Request $request, EntityRepository $repository, $defaultLimit = 10): array
+    /**
+     * @template TEntityClass of object
+     *
+     * @param DeletableEntityRepository<TEntityClass> $repository
+     * @return array<string, mixed>
+     */
+    protected function getPaginationData(Request $request, DeletableEntityRepository $repository, bool $showDeleted = false, int $defaultLimit = 10): array
     {
         $limit = $request->query->getInt('limit', $defaultLimit);
 
@@ -21,7 +27,8 @@ trait PaginationTrait
             $page = 1;
         }
 
-        $objectCount = $repository->count([]);
+        $queryBuilder = $repository->getCountQueryBuilderByDeletedStatus($showDeleted);
+        $objectCount = count((array)$queryBuilder->getResult());
 
         return [
             'current_page' => $page,

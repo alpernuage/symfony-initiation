@@ -2,14 +2,14 @@
 
 namespace App\Controller;
 
+use App\Domain\Home\HomeCreatorInterface;
+use App\Domain\Home\HomeEditorInterface;
+use App\Domain\Home\HomeInput;
+use App\Domain\Home\HomeRemoverInterface;
 use App\Domain\Home\HomeRestorerInterface;
 use App\Domain\PaginationTrait;
 use App\Domain\SuccessMessageTrait;
 use App\Entity\Home;
-use App\Domain\Home\HomeCreatorInterface;
-use App\Domain\Home\HomeInput;
-use App\Domain\Home\HomeRemoverInterface;
-use App\Domain\Home\HomeEditorInterface;
 use App\Form\HomeFormType;
 use App\Repository\HomeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,8 +46,10 @@ final class HomeController extends AbstractController
     #[Route('/{_locale}/deleted_homes', name: 'deleted_homes', requirements: ['_locale' => '%app.supported_locales%'], methods: [Request::METHOD_GET])]
     public function showDeletedHomes(Request $request, HomeRepository $homeRepository): Response
     {
-        $paginationData = $this->getPaginationData($request, $homeRepository);
-        $queryBuilder = $homeRepository->findDeletedHomesPaginated($paginationData['current_page'], $paginationData['limit']);
+        $paginationData = $this->getPaginationData($request, $homeRepository, showDeleted: true);
+        $currentPage = intval($paginationData['current_page']);
+        $limit = intval($paginationData['limit']);
+        $queryBuilder = $homeRepository->findDeletedHomesPaginated($currentPage, $limit);
         $homes = $queryBuilder->getResult();
 
         return $this->render('home/deleted_homes.html.twig', [

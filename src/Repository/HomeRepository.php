@@ -11,6 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Home|null findOneBy(array $criteria, array $orderBy = null)
  * @method Home[]    findAll()
  * @method Home[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends DeletableEntityRepository<object>
  */
 class HomeRepository extends DeletableEntityRepository
 {
