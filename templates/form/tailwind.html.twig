@@ -27,22 +27,6 @@
     {{- parent() -}}
 {%- endblock form_label -%}
 
-{%- block checkbox_row -%}
-    {%- set row_attr = row_attr|merge({ class: row_attr.class|default(row_class|default('mb-6')) }) -%}
-    {%- set widget_attr = {} -%}
-    {%- if help is not empty -%}
-        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
-    {%- endif -%}
-    <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
-        {{- form_errors(form) -}}
-        <div class="inline-flex items-center">
-            {{- form_widget(form, widget_attr) -}}
-            {{- form_label(form) -}}
-        </div>
-        {{- form_help(form) -}}
-    </div>
-{%- endblock checkbox_row -%}
-
 {%- block checkbox_widget -%}
     {%- set widget_class = widget_class|default('w-5 h-5 rounded accent-green-500 mr-2 mb-2') -%}
     {{- parent() -}}
