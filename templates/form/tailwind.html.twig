@@ -17,6 +17,16 @@
     {{- parent() -}}
 {%- endblock form_row -%}
 
+{%- block form_errors -%}
+    {%- if errors|length > 0 -%}
+        <ul>
+            {%- for error in errors -%}
+                <li class="{{ error_item_class|default('text-red-700') }}">{{ error.message }}</li>
+            {%- endfor -%}
+        </ul>
+    {%- endif -%}
+{%- endblock form_errors -%}
+
 {%- block widget_attributes -%}
     {%- set attr = attr|merge({ class: attr.class|default(widget_class|default('mt-1 w-full rounded w-full py-2 px-3 text-gray-700 leading-tight focus:ring-2 focus:ring-blue-600')) ~ (disabled ? ' ' ~ widget_disabled_class|default('border-gray-300 text-gray-500')) ~ (errors|length ? ' ' ~ widget_errors_class|default('border-red-700')) }) -%}
     {{- parent() -}}
