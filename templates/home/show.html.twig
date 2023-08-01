@@ -1,43 +1,54 @@
 {% extends 'base.html.twig' %}
 {% block title %}{{ 'actions.show'|trans({'%entity%': 'labels.home'|trans}) }}{% endblock %}
 {% block body %}
-    <h1>{{ 'actions.show'|trans({'%entity%': 'labels.home'|trans}) }}</h1>
+
+    <section>
+        {% include '_layout/page_title.html.twig' with {'page_title': 'actions.show'|trans({'%entity%': 'labels.home'|trans}) } %}
+    </section>
+
     <strong>Updated At: </strong><code>{{ home.updatedAt|date('Y-m-d H:i:s') }}</code>
 
     {% if countryName is defined and countryName is not null %}
         <p><strong>{{ 'home.country'|trans }}:</strong> {{ home.country|country_name }}</p>
     {% endif %}
 
-    <table>
-        <tr>
-            <th>{{ 'home.address'|trans }}</th>
-            <td>{{ home.address }}</td>
-        </tr>
-        <tr>
-            <th>{{ 'home.city'|trans }}</th>
-            <td>{{ home.city }}</td>
-        </tr>
-        <tr>
-            <th>{{ 'home.zip_code'|trans }}</th>
-            <td>{{ home.zipCode }}</td>
-        </tr>
-        <tr>
-            <th>{{ 'home.country'|trans }}</th>
-            <td>{{ home.country }}</td>
-        </tr>
-        <tr>
-            <th>{{ 'home.currently_occupied'|trans }}</th>
-            <td>{{ home.currentlyOccupied ? 'Yes' : 'No' }}</td>
-        </tr>
-        <tr>
-            <th>{{ 'labels.user'|trans }}</th>
-            <td>{{ home.user.firstName }} {{ home.user.lastName }}</td>
-        </tr>
-    </table>
+    <section class="my-4">
+        <table>
+            <tr class="bg-white">
+                <th class="text-left border border-gray-300 px-4 py-2">{{ 'home.address'|trans }}</th>
+                <td class="border border-gray-300 px-4 py-2">{{ home.address }}</td>
+            </tr>
+            <tr class="bg-white">
+                <th class="text-left border border-gray-300 px-4 py-2">{{ 'home.city'|trans }}</th>
+                <td class="border border-gray-300 px-4 py-2">{{ home.city }}</td>
+            </tr>
+            <tr class="bg-white">
+                <th class="text-left border border-gray-300 px-4 py-2">{{ 'home.zip_code'|trans }}</th>
+                <td class="border border-gray-300 px-4 py-2">{{ home.zipCode }}</td>
+            </tr>
+            <tr class="bg-white">
+                <th class="text-left border border-gray-300 px-4 py-2">{{ 'home.country'|trans }}</th>
+                <td class="border border-gray-300 px-4 py-2">{{ home.country }}</td>
+            </tr>
+            <tr class="bg-white">
+                <th class="text-left border border-gray-300 px-4 py-2">{{ 'home.currently_occupied'|trans }}</th>
+                <td class="border border-gray-300 px-4 py-2">{{ home.currentlyOccupied ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr class="bg-white">
+                <th class="text-left border border-gray-300 px-4 py-2">{{ 'labels.user'|trans }}</th>
+                <td class="border border-gray-300 px-4 py-2">{{ home.user.firstName }} {{ home.user.lastName }}</td>
+            </tr>
+        </table>
+    </section>
 
-    <a href="{{ path('home_list') }}">{{ 'buttons.return'|trans({'%entity%': 'labels.homes'|trans}) }}</a>
+    {% include '_layout/return_button.html.twig' with {
+        'path': path('home_list'),
+        'return_button': 'buttons.return'|trans({'%entity%': 'labels.homes'|trans})
+    } %}
 
-    {% for message in app.flashes('success') %}
-        <div class="flash-notice">{{ message|trans }}</div>
-    {% endfor %}
+    <section>
+        {% for message in app.flashes('success') %}
+            <div class="flash-notice">{{ message|trans }}</div>
+        {% endfor %}
+    </section>
 {% endblock %}
