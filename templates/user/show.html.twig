@@ -1,39 +1,49 @@
 {% extends 'base.html.twig' %}
 {% block title %}{{ 'actions.show'|trans({'%entity%': 'labels.user'|trans}) }}{% endblock %}
 {% block body %}
-    <h1>{{ 'actions.show'|trans({'%entity%': 'labels.user'|trans}) }}</h1>
+    <section>
+        {% include '_layout/page_title.html.twig' with {'page_title': 'actions.show'|trans({'%entity%': 'labels.user'|trans}) } %}
+    </section>
+
     <strong>Updated At: </strong><code>{{ user.updatedAt|date('Y-m-d H:i:s') }}</code>
 
-    <table>
-        <tr>
-            <th>{{ 'user.first_name'|trans }}</th>
-            <td>{{ user.firstName }}</td>
-        </tr>
-        <tr>
-            <th>{{ 'user.last_name'|trans }}</th>
-            <td>{{ user.lastName }}</td>
-        </tr>
-        <tr>
-            <th>{{ 'user.email'|trans }}</th>
-            <td>{{ user.email|default('N/A') }}</td>
-        </tr>
-    </table>
+    <section class="my-4">
+        <table>
+            <tr class="bg-white">
+                <th class="text-left border border-gray-300 px-4 py-2">{{ 'user.first_name'|trans }}</th>
+                <td class="border border-gray-300 px-4 py-2">{{ user.firstName }}</td>
+            </tr>
+            <tr class="bg-white">
+                <th class="text-left border border-gray-300 px-4 py-2">{{ 'user.last_name'|trans }}</th>
+                <td class="border border-gray-300 px-4 py-2">{{ user.lastName }}</td>
+            </tr>
+            <tr class="bg-white">
+                <th class="text-left border border-gray-300 px-4 py-2">{{ 'user.email'|trans }}</th>
+                <td class="border border-gray-300 px-4 py-2">{{ user.email|default('N/A') }}</td>
+            </tr>
+        </table>
+    </section>
 
-    <a href="{{ path('user_list') }}">{{ 'buttons.return'|trans({'%entity%': 'labels.users'|trans}) }}</a>
+    {% include '_layout/return_button.html.twig' with {
+        'path': path('user_list'),
+        'return_button': 'buttons.return'|trans({'%entity%': 'labels.homes'|trans})
+    } %}
 
-    {% for message in app.flashes('success') %}
-        <div class="flash-notice">{{ message|trans }}</div>
-    {% endfor %}
+    <section>
+        {% for message in app.flashes('success') %}
+            <div class="flash-notice">{{ message|trans }}</div>
+        {% endfor %}
 
-    {% for message in app.flashes('create-listener') %}
-        <div>{{ message }}</div>
-    {% endfor %}
+        {% for message in app.flashes('create-listener') %}
+            <div>{{ message }}</div>
+        {% endfor %}
 
-    {% for message in app.flashes('update-listener') %}
-        <div>{{ message }}</div>
-    {% endfor %}
+        {% for message in app.flashes('update-listener') %}
+            <div>{{ message }}</div>
+        {% endfor %}
 
-    {% for message in app.flashes('recently-visited-pages') %}
-        <div>{{ message }}</div>
-    {% endfor %}
+        {% for message in app.flashes('recently-visited-pages') %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    </section>
 {% endblock %}

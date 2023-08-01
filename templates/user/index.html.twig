@@ -1,44 +1,78 @@
 {% extends 'base.html.twig' %}
 {% block body %}
     {% apply spaceless %}
-        <a href="{{ path('home_list') }}" class="btn btn-primary">{{ 'buttons.go_to'|trans({'%entity%': 'labels.homes'|trans}) }}</a>
+        <a href="{{ path('home_list') }}"
+           class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mr-2">🏠 {{ 'buttons.go_to'|trans({'%entity%': 'labels.homes'|trans}) }}</a>
 
-        <h1>{{ 'list'|trans }} {{ 'labels.users'|trans }}</h1>
+        <section>
+            {% include '_layout/page_title.html.twig' with {'page_title': 'list'|trans ~ ' ' ~ 'labels.users'|trans} %}
+        </section>
 
-        <a href="{{ path('user_create') }}" class="btn btn-primary">{{ 'actions.create'|trans({'%entity%': 'labels.user'|trans}) }}</a>
+        <section class="my-4">
+            <a href="{{ path('user_create') }}"
+               class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">{{ 'actions.create'|trans({'%entity%': 'labels.user'|trans}) }}</a>
+        </section>
 
-        {% include 'user/_user_list.html.twig' with {'users': users, 'show_details_edit_remove_buttons': true} %}
+        <section class="overflow-auto">
+            {% include 'user/_user_list.html.twig' with {'users': users, 'display_details_edit_remove_buttons': true} %}
+        </section>
 
-        <form action="{{ path('user_list') }}">
-            <select name="limit" onchange="this.form.submit()">
-                <option value="5" {% if limit == 5 %}selected{% endif %}>5</option>
-                <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
-                <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
-            </select>
-        </form>
+        <section class="flex justify-between items-center my-4">
+            <div class="flex items-center">
+                <form action="{{ path('user_list') }}">
+                    <select class="border border-gray-300 rounded px-4 py-2" name="limit"
+                            onchange="this.form.submit()">
+                        <option value="5" {% if limit == 5 %}selected{% endif %}>5</option>
+                        <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
+                        <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
+                    </select>
+                </form>
+            </div>
 
-        {% if pages_count > 1 %}
-            <div class="pagination">
-                {% if current_page > 1 %}
-                    <a href="{{ path('user_list', {'page': current_page - 1, 'limit': limit}) }}">{{ 'pagination.previous'|trans }}</a>
-                {% endif %}
-                {% for page in 1..pages_count %}
-                    {% if page == current_page %}
-                        <span>{{ page }}</span>
-                    {% else %}
-                        <a href="{{ path('user_list', {'page': page, 'limit': limit}) }}">{{ page }}</a>
-                    {% endif %}
-                {% endfor %}
-                {% if current_page < pages_count %}
-                    <a href="{{ path('user_list', {'page': current_page + 1, 'limit': limit}) }}">{{ 'pagination.next'|trans }}</a>
+            <div class="flex items-center">
+                {% if pages_count > 1 %}
+                    <nav>
+                        <ul class="inline-flex -space-x-px">
+                            {% if current_page > 1 %}
+                                <li>
+                                    <a href="{{ path('user_list', {'page': current_page - 1, 'limit': limit}) }}"
+                                       class="bg-white border border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 ml-0 rounded-l-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ 'pagination.previous'|trans }}</a>
+                                </li>
+                            {% endif %}
+                            {% for page in 1..pages_count %}
+                                {% if page == current_page %}
+                                    <li>
+                                        <a href="#" aria-current="page"
+                                           class="bg-blue-50 border border-gray-300 text-blue-600 hover:bg-blue-100 hover:text-blue-700  py-2 px-3 dark:border-gray-700 dark:bg-gray-700 dark:text-white">{{ page }}</a>
+                                    </li>
+                                {% else %}
+                                    <li>
+                                        <a href="{{ path('user_list', {'page': page, 'limit': limit}) }}"
+                                           class="bg-white border border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ page }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if current_page < pages_count %}
+                                <li>
+                                    <a href="{{ path('user_list', {'page': current_page + 1, 'limit': limit}) }}"
+                                       class="bg-white border border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 rounded-r-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ 'pagination.next'|trans }}</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
                 {% endif %}
             </div>
-        {% endif %}
+        </section>
 
-        <a href="{{ path('deleted_users') }}" class="btn btn-primary">{{ 'buttons.go_to_deleted'|trans({'%entity%': 'labels.user'|trans}) }}</a>
+        <section>
+            <a href="{{ path('deleted_users') }}"
+               class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded my-4">{{ 'buttons.go_to_deleted'|trans({'%entity%': 'labels.user'|trans}) }}</a>
+        </section>
 
-        {% for message in app.flashes('success') %}
-            <div class="flash-notice">{{ message|trans }}</div>
-        {% endfor %}
+        <section>
+            {% for message in app.flashes('success') %}
+                <div class="flash-notice">{{ message|trans }}</div>
+            {% endfor %}
+        </section>
     {% endapply %}
 {% endblock %}

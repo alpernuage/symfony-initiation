@@ -1,9 +1,16 @@
 {% extends 'base.html.twig' %}
 {% block title %}{{ 'actions.edit'|trans({'%entity%': 'labels.home'|trans}) }}{% endblock %}
 {% block body %}
-    <h1>{{ 'actions.edit'|trans({'%entity%': 'labels.home'|trans}) }}</h1>
+    <section>
+        {% include '_layout/page_title.html.twig' with {'page_title': 'actions.edit'|trans({'%entity%': 'labels.home'|trans}) } %}
+    </section>
 
-    {{ form(edit_home_form) }}
+    <section class="mb-4">
+        {{ form(edit_home_form) }}
+    </section>
 
-    <a href="{{ path('home_list') }}">{{ 'actions.cancel'|trans({'%entity%': 'labels.home'|trans}) }}</a>
+    {% include '_layout/return_button.html.twig' with {
+        'path': path('home_list'),
+        'return_button': 'actions.cancel'|trans({'%entity%': 'labels.home'|trans})
+    } %}
 {% endblock %}

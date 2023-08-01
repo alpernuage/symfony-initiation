@@ -1,41 +1,74 @@
 {% extends 'base.html.twig' %}
 {% block body %}
     {% apply spaceless %}
-        <h1>{{ 'list'|trans }} {{ 'labels.deleted_users'|trans }}</h1>
+        <main class="container mx-auto p-4">
 
-        {% include 'user/_user_list.html.twig' with {'user s': users, 'show_details_edit_remove_buttons': false} %}
+            <section>
+                {% include '_layout/page_title.html.twig' with {'page_title': 'list'|trans ~ ' ' ~ 'labels.deleted_users'|trans} %}
+            </section>
 
-        <form action="{{ path('deleted_users') }}">
-            <select name="limit" onchange="this.form.submit()">
-                <option value="5" {% if limit == 5 %}selected{% endif %}>5</option>
-                <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
-                <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
-            </select>
-        </form>
+            <section class="overflow-auto">
+                {% include 'user/_user_list.html.twig' with {'users': users, 'display_details_edit_remove_buttons': false} %}
+            </section>
 
-        {% if pages_count > 1 %}
-            <div class="pagination">
-                {% if current_page > 1 %}
-                    <a href="{{ path('deleted_users', {'page': current_page - 1, 'limit': limit}) }}">{{ 'pagination.previous'|trans }}</a>
-                {% endif %}
-                {% for page in 1..pages_count %}
-                    {% if page == current_page %}
-                        <span>{{ page }}</span>
-                    {% else %}
-                        <a href="{{ path('deleted_users', {'page': page, 'limit': limit}) }}">{{ page }}</a>
+            <section class="flex justify-between items-center my-4">
+                <div class="flex items-center">
+                    <form action="{{ path('deleted_users') }}">
+                        <select class="border border-gray-300 rounded px-4 py-2" name="limit"
+                                onchange="this.form.submit()">
+                            <option value="5" {% if limit == 5 %}selected{% endif %}>5</option>
+                            <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
+                            <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
+                        </select>
+                    </form>
+                </div>
+
+                <div class="flex items-center">
+                    {% if pages_count > 1 %}
+                        <nav>
+                            <ul class="inline-flex -space-x-px">
+                                {% if current_page > 1 %}
+                                    <li>
+                                        <a href="{{ path('deleted_users', {'page': current_page - 1, 'limit': limit}) }}"
+                                           class="bg-white border border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 ml-0 rounded-l-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ 'pagination.previous'|trans }}</a>
+                                    </li>
+                                {% endif %}
+                                {% for page in 1..pages_count %}
+                                    {% if page == current_page %}
+                                        <li>
+                                            <a href="#" aria-current="page"
+                                               class="bg-blue-50 border border-gray-300 text-blue-600 hover:bg-blue-100 hover:text-blue-700  py-2 px-3 dark:border-gray-700 dark:bg-gray-700 dark:text-white">{{ page }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li>
+                                            <a href="{{ path('deleted_users', {'page': page, 'limit': limit}) }}"
+                                               class="bg-white border border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ page }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if current_page < pages_count %}
+                                    <li>
+                                        <a href="{{ path('deleted_users', {'page': current_page + 1, 'limit': limit}) }}"
+                                           class="bg-white border border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 rounded-r-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ 'pagination.next'|trans }}</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
                     {% endif %}
+                </div>
+            </section>
+
+            <section>
+                {% for message in app.flashes('success') %}
+                    <div class="flash-notice">{{ message|trans }}</div>
                 {% endfor %}
-                {% if current_page < pages_count %}
-                    <a href="{{ path('deleted_users', {'page': current_page + 1, 'limit': limit}) }}">{{ 'pagination.next'|trans }}</a>
-                {% endif %}
-            </div>
-        {% endif %}
+            </section>
 
-        {% for message in app.flashes('success') %}
-            <div class="flash-notice">{{ message|trans }}</div>
-        {% endfor %}
+            {% include '_layout/return_button.html.twig' with {
+                'path': path('user_list'),
+                'return_button': 'actions.cancel'|trans({'%entity%': 'labels.user'|trans})
+            } %}
 
-        <a href="{{ path('user_list') }}">{{ 'actions.cancel'|trans({'%entity%': 'labels.user'|trans}) }}</a>
-
+        </main>
     {% endapply %}
 {% endblock %}

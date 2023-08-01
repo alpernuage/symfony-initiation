@@ -1,9 +1,16 @@
 {% extends 'base.html.twig' %}
 {% block title %}{{ 'actions.edit'|trans({'%entity%': 'labels.user'|trans}) }}{% endblock %}
 {% block body %}
-    <h1>{{ 'actions.edit'|trans({'%entity%': 'labels.user'|trans}) }}</h1>
+    <section>
+        {% include '_layout/page_title.html.twig' with {'page_title': 'actions.edit'|trans({'%entity%': 'labels.user'|trans}) } %}
+    </section>
 
-    {{ form(edit_user_form) }}
+    <section class="mb-4">
+        {{ form(edit_user_form) }}
+    </section>
 
-    <a href="{{ path('user_list') }}">{{ 'actions.cancel'|trans({'%entity%': 'labels.user'|trans}) }}</a>
+    {% include '_layout/return_button.html.twig' with {
+        'path': path('user_list'),
+        'return_button': 'actions.cancel'|trans({'%entity%': 'labels.user'|trans})
+    } %}
 {% endblock %}

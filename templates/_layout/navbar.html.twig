@@ -1,0 +1,18 @@
+<nav class="bg-orange-500 p-4">
+    <section class="container mx-auto flex justify-between items-center">
+        <span class="text-xl font-bold hidden md:block">Alper Initiation Project</span>
+
+        <ul class="flex items-center md:ml-auto">
+            <li class="mr-6">
+                <a href="{{ path('home_list') }}"
+                   class="text-xl font-bold items-center border-b-2 border-transparent hover:border-gray-500 transition duration-300">{{ 'labels.homes'|trans }}</a>
+            </li>
+            <li class="mr-6">
+                <a href="{{ path('user_list') }}"
+                   class="text-xl font-bold items-center border-b-2 border-transparent hover:border-gray-500 transition duration-300">{{ 'labels.users'|trans }}</a>
+            </li>
+        </ul>
+
+        {% include '_layout/languages.html.twig' %}
+    </section>
+</nav>
