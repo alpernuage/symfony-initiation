@@ -58,10 +58,8 @@
                 </div>
             </section>
 
-            <section>
-                {% for message in app.flashes('success') %}
-                    <div class="flash-notice">{{ message|trans }}</div>
-                {% endfor %}
+            <section class="mt-4">
+                {% include '_layout/success_flash_messages.html.twig' %}
             </section>
 
             {% include '_layout/return_button.html.twig' with {

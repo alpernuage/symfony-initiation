@@ -46,9 +46,7 @@
         'return_button': 'buttons.return'|trans({'%entity%': 'labels.homes'|trans})
     } %}
 
-    <section>
-        {% for message in app.flashes('success') %}
-            <div class="flash-notice">{{ message|trans }}</div>
-        {% endfor %}
+    <section class="mt-4">
+        {% include '_layout/success_flash_messages.html.twig' %}
     </section>
 {% endblock %}

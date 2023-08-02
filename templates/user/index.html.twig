@@ -69,10 +69,8 @@
                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded my-4">{{ 'buttons.go_to_deleted'|trans({'%entity%': 'labels.user'|trans}) }}</a>
         </section>
 
-        <section>
-            {% for message in app.flashes('success') %}
-                <div class="flash-notice">{{ message|trans }}</div>
-            {% endfor %}
+        <section class="mt-4">
+            {% include '_layout/success_flash_messages.html.twig' %}
         </section>
     {% endapply %}
 {% endblock %}
