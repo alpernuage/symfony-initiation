@@ -5,6 +5,8 @@ no_user_found: Aucun utilisateur trouvé
 no_home_found: Aucune maison trouvée
 actions_title: Actions
 entity: Entité
+yes: Oui
+no: Non
 
 labels:
   user: Utilisateur
@@ -31,7 +33,7 @@ actions:
   create: Créer %entity%
   edit: Modifier %entity%
   remove: Supprimer %entity%
-  hard_remove: Supprimer dur %entity%
+  hard_remove: Supprimer définitivement %entity%
   restore: Restaurer %entity%
   cancel: Annuler et retourner à la page de liste %entity%
 
@@ -51,5 +53,16 @@ buttons:
   go_to_deleted: Aller à la page de liste %entity% supprimés
   return: Retourner à la page de liste %entity%
 
+confirmation:
+  soft_delete: "Êtes-vous sûr de vouloir supprimer cet(te) %entity%?"
+  hard_delete: "Êtes-vous sûr de vouloir DÉFINITIVEMENT supprimer cet(te) %entity%?"
+  restore: "Êtes-vous sûr de vouloir restaurer cet(te) %entity%?"
+
 constraints:
   unique_email_value: La valeur "%value%" est déjà utilisée.
+
+footer_text: Tous droits réservés.
+project_name: Alper Project d'Initiation
+tab_text: Bienvenue
+
+confirm_delete_message: "Êtes-vous sûr de vouloir supprimer cet utilisateur ?"

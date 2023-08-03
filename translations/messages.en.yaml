@@ -5,6 +5,8 @@ no_user_found: No user found
 no_home_found: No home found
 actions_title: Actions
 entity: Entity
+yes: Yes
+no: No
 
 labels:
   user: User
@@ -51,5 +53,14 @@ buttons:
   go_to_deleted: Go to the deleted %entity% list
   return: Return to the %entity% list
 
+confirmation:
+  soft_delete: "Are you sure you want to delete this %entity%?"
+  hard_delete: "Are you sure you want to HARD delete this %entity%?"
+  restore: "Are you sure you want to restore this %entity%?"
+
 constraints:
   unique_email_value: The value "%value%" is already used.
+
+footer_text: All rights reserved.
+project_name: Alper Initiation Project
+tab_text: Welcome
