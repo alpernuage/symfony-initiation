@@ -19,7 +19,6 @@ LIME_YELLOW=$(shell tput setaf 190)
 RESET=$(shell tput sgr0)
 BOLD=$(shell tput bold)
 REVERSE=$(shell tput smso)
-RESET=\033[0m
 
 ## —— 📦 Install dependencies ——
 .PHONY: vendor
