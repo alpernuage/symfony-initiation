@@ -1,4 +1,4 @@
-include .env
+include .env .env.local
 export
 
 DOCKER_COMPOSE = docker compose
@@ -10,32 +10,46 @@ COMPOSER = $(PHP) composer
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 
 # 🎨 Colors
-GREEN := $(shell tput -Txterm setaf 2)
 RED := $(shell tput -Txterm setaf 1)
+GREEN := $(shell tput -Txterm setaf 2)
 YELLOW := $(shell tput -Txterm setaf 3)
+BLUE := $(shell tput -Txterm setaf 4)
+ORANGE=$(shell tput setaf 172)
+LIME_YELLOW=$(shell tput setaf 190)
+NORMAL=$(shell tput sgr0)
+BOLD=$(shell tput bold)
+REVERSE=$(shell tput smso)
 RESET=\033[0m
 
 ## —— 📦 Install dependencies ——
-.PHONY: composer-install
-composer-install: ## Install PHP dependencies
+.PHONY: vendor
+vendor: ## Install PHP dependencies
+vendor: .env.local
 	$(COMPOSER) install
 
 ## —— 🔥 Project ——
-.PHONY: env
-env: ## 📄📄 Create .env.local file
+.env.local: .env
 	@if [ -f .env.local ]; then \
-		echo 'File already exists.'; \
-		echo '${YELLOW}/!!!\ ".env.local" already exists. Please update your copy accordingly.$(RESET)'; \
+		if ! cmp -s .env .env.local; then \
+			echo "${LIME_YELLOW}ATTENTION: ${RED}${BOLD}.env file and .env.local are different, check the changes bellow:${RESET}${REVERSE}"; \
+			diff -u .env .env.local | grep -E "^[\+\-]"; \
+			echo "${RESET}"; \
+			echo "---\n"; \
+			echo "${LIME_YELLOW}ATTENTION: ${ORANGE}This message will only appear if the .env file is updated again.${RESET}"; \
+			touch .env.local; \
+			exit 1; \
+		fi \
 	else \
 		cp .env .env.local; \
-		echo 'cp .env .env.local'; \
-		echo '${YELLOW}.env.local file created. Please modify it according to your needs and rerun the command.$(RESET)'; \
+		echo "${GREEN}.env.local file has been created."; \
+		echo "${ORANGE}Modify it according to your needs and continue.${RESET}"; \
+		exit 1; \
 	fi
 
 .PHONY: install
 install: ## 🚀 Project installation
-install: ssl build start vendor
-	echo "${YELLOW}The application is available at the url: SERVER_NAME$(RESET)";
+install: .env.local ssl build start vendor assets
+	@echo "${BLUE}The application is available at the url: $(SERVER_NAME)$(RESET)";
 
 ## —— 🖥️ Console ——
 .PHONY: console
@@ -50,9 +64,17 @@ composer: ## Execute composer command
 ## —— 🔐 TLS certificate ——
 .PHONY: ssl
 ssl: ## Create tls certificates via mkcert library: https://github.com/FiloSottile/mkcert
-ssl:
-	rm -rf devops/caddy/certs/*
+	@echo "${YELLOW}Removing existing certificates...${RESET}"
+	rm -rf devops/caddy/certs/
+	mkdir devops/caddy/certs/
+	@echo "${REVERSE}"
 	cd ./devops/caddy/certs && mkcert $(SERVER_NAME)
+	@echo "${RESET}"
+
+## —— Assets ——
+.PHONY: assets
+assets: ## Install assets
+	npm install
 
 ## —— 🐳 Docker ——
 .PHONY: build
@@ -74,7 +96,7 @@ docker-compose.override.yml: docker-compose.override.yml.dist
 
 .PHONY: start
 start: ## ▶️ Start the containers
-start: docker-compose.override.yml
+start: .env.local docker-compose.override.yml
 	$(DOCKER_COMPOSE) up -d --remove-orphans
 
 .PHONY: stop
@@ -101,6 +123,10 @@ reset: kill down build start
 .PHONY: cache
 cache: ## 🧹 Clear Symfony cache
 	$(CONSOLE) cache:clear
+
+.PHONY: cache-test
+cache-test: ## 🧹 Clear Symfony cache for test environment
+	$(CONSOLE) cache:clear --env=test
 
 ## —— 🔍 PHPStan ——
 .PHONY: phpstan
@@ -163,6 +189,11 @@ push: ## Run git push command on current branch
 	git push origin $(BRANCH)
 
 ## —— 🛠️ Others ——
+.PHONY: open
+open: ## Open the project in the browser
+	@echo "${GREEN}Opening https://$(SERVER_NAME)"
+	@open https://$(SERVER_NAME)
+
 .DEFAULT_GOAL := help
 .PHONY: help
 help: ## Describe targets
