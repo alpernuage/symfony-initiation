@@ -81,7 +81,7 @@ class Home
     #[ApiFilter(BooleanFilter::class)]
     private bool $currentlyOccupied;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Groups(['home:read', 'home:write'])]
     private User $user;
