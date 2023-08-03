@@ -3,20 +3,58 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use App\Domain\User\Api\GetUserOutput;
+use App\Domain\User\Api\PatchUserInput;
+use App\Domain\User\Api\PostUserInput;
+use App\Domain\User\Api\PutUserInput;
 use App\Repository\UserRepository;
-use Doctrine\ORM\Mapping as ORM;
+use App\State\GetCollectionUserOutputProvider;
+use App\State\GetUserOutputProvider;
+use App\State\PatchUserInputProcessor;
+use App\State\PostUserInputProcessor;
+use App\State\PutUserInputProcessor;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Bridge\Doctrine\Types\UuidType;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
+    operations: [
+        new GetCollection(
+            output: GetUserOutput::class,
+            provider: GetCollectionUserOutputProvider::class
+        ),
+        new Get(
+            output: GetUserOutput::class,
+            provider: GetUserOutputProvider::class
+        ),
+        new Post(
+            input: PostUserInput::class,
+            processor: PostUserInputProcessor::class,
+        ),
+        new Put(
+            input: PutUserInput::class,
+            processor: PutUserInputProcessor::class,
+        ),
+        new Patch(
+            input: PatchUserInput::class,
+            processor: PatchUserInputProcessor::class,
+        ),
+        new Delete()
+    ],
     normalizationContext: ['groups' => ['user:read']],
-    denormalizationContext: ['groups' => ['user:write']],
+    denormalizationContext: ['groups' => ['user:write']]
 )]
 class User
 {
