@@ -28,6 +28,7 @@ vendor: .env.local
 	$(COMPOSER) install
 
 ## —— 🔥 Project ——
+.env.local: ## 📄📄 Create or update .env.local file
 .env.local: .env
 	@if [ -f .env.local ]; then \
 		if ! cmp -s .env .env.local; then \
