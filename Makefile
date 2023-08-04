@@ -33,8 +33,7 @@ vendor: .env.local
 		if ! cmp -s .env .env.local; then \
 			echo "${LIME_YELLOW}ATTENTION: ${RED}${BOLD}.env file and .env.local are different, check the changes bellow:${RESET}${REVERSE}"; \
 			diff -u .env .env.local | grep -E "^[\+\-]"; \
-			echo "${RESET}"; \
-			echo "---\n"; \
+			echo "${RESET}---\n"; \
 			echo "${LIME_YELLOW}ATTENTION: ${ORANGE}This message will only appear once if the .env file is updated again.${RESET}"; \
 			touch .env.local; \
 			exit 1; \
