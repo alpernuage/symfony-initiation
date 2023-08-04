@@ -35,7 +35,7 @@ vendor: .env.local
 			diff -u .env .env.local | grep -E "^[\+\-]"; \
 			echo "${RESET}"; \
 			echo "---\n"; \
-			echo "${LIME_YELLOW}ATTENTION: ${ORANGE}This message will only appear if the .env file is updated again.${RESET}"; \
+			echo "${LIME_YELLOW}ATTENTION: ${ORANGE}This message will only appear once if the .env file is updated again.${RESET}"; \
 			touch .env.local; \
 			exit 1; \
 		fi \
