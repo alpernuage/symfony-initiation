@@ -4,6 +4,7 @@ export
 DOCKER_COMPOSE = docker compose
 EXEC = $(DOCKER_COMPOSE) exec
 PHP = $(EXEC) php
+CERTS_PATH := devops/caddy/certs/
 CONSOLE = $(PHP) bin/console
 CONTAINER_PHP = alper-initiation-php
 COMPOSER = $(PHP) composer
@@ -64,10 +65,10 @@ composer: ## Execute composer command
 .PHONY: ssl
 ssl: ## Create tls certificates via mkcert library: https://github.com/FiloSottile/mkcert
 	@echo "${YELLOW}Removing existing certificates...${RESET}"
-	rm -rf devops/caddy/certs/
-	mkdir devops/caddy/certs/
+	rm -rf $(CERTS_PATH)
+	mkdir $(CERTS_PATH)
 	@echo "${REVERSE}"
-	cd ./devops/caddy/certs && mkcert $(SERVER_NAME)
+	cd $(CERTS_PATH) && mkcert $(SERVER_NAME)
 	@echo "${RESET}"
 
 ## —— Assets ——
