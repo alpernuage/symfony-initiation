@@ -29,21 +29,23 @@
         'return_button': 'buttons.return'|trans({'%entity%': 'labels.homes'|trans})
     } %}
 
-    <section>
-        {% for message in app.flashes('success') %}
-            <div class="flash-notice">{{ message|trans }}</div>
-        {% endfor %}
+    <section class="mt-4">
+        {% include '_layout/success_flash_messages.html.twig' %}
+    </section>
 
-        {% for message in app.flashes('create-listener') %}
-            <div>{{ message }}</div>
-        {% endfor %}
+    <section class="mt-4">
+        <ul class="bg-gray-100 border border-gray-400 text-blue-500 px-4 rounded">
+            {% for message in app.flashes('create-listener') %}
+                <li class="my-2 text-green-500">{{ message }}</li>
+            {% endfor %}
 
-        {% for message in app.flashes('update-listener') %}
-            <div>{{ message }}</div>
-        {% endfor %}
+            {% for message in app.flashes('update-listener') %}
+                <li class="my-2 text-yellow-500">{{ message }}</li>
+            {% endfor %}
 
-        {% for message in app.flashes('recently-visited-pages') %}
-            <div>{{ message }}</div>
-        {% endfor %}
+            {% for message in app.flashes('recently-visited-pages') %}
+                <li class="my-2">{{ message }}</li>
+            {% endfor %}
+        </ul>
     </section>
 {% endblock %}
