@@ -93,7 +93,7 @@ class UserControllerTest extends WebTestCase
 
         $translatedSuccessMessage = self::getTranslatedSuccessMessage('create', $entityName, ['Alper', 'AKBULUT'], $locale);
 
-        self::assertSelectorNotExists("div:contains('$translatedSuccessMessage')");
+        self::assertSelectorNotExists("ul li:contains('$translatedSuccessMessage')");
 
         // When the user submits creation with valid data
         $client->request('GET', sprintf('/%s/user/create', $locale));
@@ -103,7 +103,7 @@ class UserControllerTest extends WebTestCase
         self::assertResponseRedirects();
         $client->followRedirect();
 
-        self::assertSelectorExists("div:contains('$translatedSuccessMessage')");
+        self::assertSelectorExists("ul li:contains('$translatedSuccessMessage')");
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
 
         $translatedShowText = self::getTranslatedActionText('show', $entityName, $locale);
@@ -223,7 +223,7 @@ class UserControllerTest extends WebTestCase
 
         $translatedSuccessMessage = self::getTranslatedSuccessMessage('edit', $entityName, ['Emma', 'BROWN'], $locale);
 
-        self::assertSelectorExists("div:contains('$translatedSuccessMessage')");
+        self::assertSelectorExists("ul li:contains('$translatedSuccessMessage')");
 
         $translatedShowText = self::getTranslatedActionText('show', $entityName, $locale);
 
@@ -251,7 +251,7 @@ class UserControllerTest extends WebTestCase
         $entityName = self::getTranslatedEntityName($locale, 'user');
         $translatedSuccessMessage = self::getTranslatedSuccessMessage('edit', $entityName, ['Emma', 'BROWN'], $locale);
 
-        self::assertSelectorNotExists("div:contains('$translatedSuccessMessage')");
+        self::assertSelectorNotExists("ul li:contains('$translatedSuccessMessage')");
         static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $translatedEditText = self::getTranslatedActionText('edit', $entityName, $locale);
@@ -383,7 +383,7 @@ class UserControllerTest extends WebTestCase
         $entityName = self::getTranslatedEntityName($locale, 'user');
         $translatedSuccessMessage = self::getTranslatedSuccessMessage('delete', $entityName, ['John', 'DOE'], $locale);
 
-        self::assertSelectorExists("div:contains('$translatedSuccessMessage')");
+        self::assertSelectorExists("ul li:contains('$translatedSuccessMessage')");
     }
 
     /**
@@ -416,7 +416,7 @@ class UserControllerTest extends WebTestCase
         $entityName = self::getTranslatedEntityName($locale, 'user');
         $translatedSuccessMessage = self::getTranslatedSuccessMessage('delete', $entityName, ['John', 'DOE'], $locale);
 
-        self::assertSelectorExists("div:contains('$translatedSuccessMessage')");
+        self::assertSelectorExists("ul li:contains('$translatedSuccessMessage')");
     }
 
     /**
@@ -458,7 +458,7 @@ class UserControllerTest extends WebTestCase
         $entityName = self::getTranslatedEntityName($locale, 'user');
         $translatedSuccessMessage = self::getTranslatedSuccessMessage('restore', $entityName, ['John', 'DOE'], $locale);
 
-        self::assertSelectorExists("div:contains('$translatedSuccessMessage')");
+        self::assertSelectorExists("ul li:contains('$translatedSuccessMessage')");
     }
 
     private function submitCreateOrUpdateUserForm(KernelBrowser $client, string $locale, string $firstName, string $lastName, ?string $email = null): void

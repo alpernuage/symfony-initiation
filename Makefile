@@ -64,9 +64,11 @@ composer: ## Execute composer command
 ## —— 🔐 TLS certificate ——
 .PHONY: ssl
 ssl: ## Create tls certificates via mkcert library: https://github.com/FiloSottile/mkcert
-	@echo "${YELLOW}Removing existing certificates...${RESET}"
-	rm -rf $(CERTS_PATH)
-	mkdir $(CERTS_PATH)
+	@if [ -d $(CERTS_PATH) ]; then \
+		echo "${YELLOW}Removing existing certificates...${RESET}"; \
+		rm -rf $(CERTS_PATH); \
+	fi
+	mkdir -p $(CERTS_PATH)
 	@echo "${REVERSE}"
 	cd $(CERTS_PATH) && mkcert $(SERVER_NAME)
 	@echo "${RESET}"
@@ -93,6 +95,24 @@ docker-compose.override.yml: docker-compose.override.yml.dist
 		echo "${YELLOW}Modify it according to your needs and rerun the command.$(RESET)"; \
 		exit 1; \
 	fi
+
+#docker-compose.override.yml: ## 📄📄 Create or update docker-compose.override.yml file
+#docker-compose.override.yml: docker-compose.override.yml.dist
+#	@if [ -f docker-compose.override.yml ]; then \
+#		if ! cmp -s docker-compose.override.yml.dist docker-compose.override.yml; then \
+#			echo "${LIME_YELLOW}ATTENTION: ${RED}${BOLD}docker-compose.override.yml.dist file and docker-compose.override.yml are different, check the changes bellow:${RESET}${REVERSE}"; \
+#			diff -u docker-compose.override.yml.dist docker-compose.override.yml | grep -E "^[\+\-]"; \
+#			echo "${RESET}---\n"; \
+#			echo "${LIME_YELLOW}ATTENTION: ${ORANGE}This message will only appear once if the docker-compose.override.yml.dist file is updated again.${RESET}"; \
+#			touch docker-compose.override.yml; \
+#			exit 1; \
+#		fi \
+#	else \
+#		cp docker-compose.override.yml.dist docker-compose.override.yml; \
+#		echo "${GREEN}docker-compose.override.yml file has been created."; \
+#		echo "${ORANGE}Modify it according to your needs and continue.${RESET}"; \
+#		exit 1; \
+#	fi
 
 .PHONY: start
 start: ## ▶️ Start the containers
