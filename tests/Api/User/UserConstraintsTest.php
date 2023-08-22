@@ -27,11 +27,11 @@ class UserConstraintsTest extends ApiTestCase
         );
 
         // Then the "Paul BLANC" user creation fails
-        self::assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains([
-            '@context' => '/api/contexts/Error',
-            '@type' => 'hydra:Error',
-            'hydra:description' => 'Cannot create an instance of "App\Entity\User" from serialized data because its constructor requires parameter "lastName" to be present.',
+            '@context' => '/api/contexts/ConstraintViolationList',
+            '@type' => 'ConstraintViolationList',
+            'hydra:description' => 'lastName: Last name should not be blank.',
         ]);
     }
 
@@ -52,7 +52,7 @@ class UserConstraintsTest extends ApiTestCase
         self::assertJsonContains([
             '@context' => '/api/contexts/ConstraintViolationList',
             '@type' => 'ConstraintViolationList',
-            'hydra:description' => "email: Cette valeur n'est pas une adresse email valide.",
+            'hydra:description' => "email: Email should be valid.",
         ]);
     }
 
@@ -62,6 +62,10 @@ class UserConstraintsTest extends ApiTestCase
         $testUser = self::getTestUser();
 
         // Then create the "Paul BLANC" user with NON EXISTING email
+        $nonExistingUser = $this->getUserRepository()->findOneBy(["email" => "paul.blanc@example.com"]);
+
+        self::assertNull($nonExistingUser);
+
         $payload = [
             "firstName" => "Paul",
             "lastName" => "BLANC",
@@ -94,11 +98,11 @@ class UserConstraintsTest extends ApiTestCase
         );
 
         // Then the "Paul" user update fails
-        static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains([
-            '@context' => '/api/contexts/ConstraintViolationList',
-            '@type' => 'ConstraintViolationList',
-            'hydra:description' => 'email: Cette valeur est déjà utilisée.',
+            '@context' => '/api/contexts/Error',
+            '@type' => 'hydra:Error',
+            'hydra:description' => 'Email already used.',
         ]);
     }
 }

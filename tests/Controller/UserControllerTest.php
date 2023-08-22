@@ -125,7 +125,7 @@ class UserControllerTest extends WebTestCase
         $this->submitCreateOrUpdateUserForm($client, $locale, 'Alper', 'AKBULUT', 'invalid-email@example');
 
         // Then the "Alper" user creation fails
-        static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $entityName = self::getTranslatedEntityName($locale, 'user');
         $translatedCreateText = self::getTranslatedActionText('create', $entityName, $locale);
@@ -153,7 +153,7 @@ class UserControllerTest extends WebTestCase
         );
 
         // Then the "Alice" user creation fails
-        static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $entityName = self::getTranslatedEntityName($locale, 'user');
         $translatedCreateText = self::getTranslatedActionText('create', $entityName, $locale);
@@ -252,7 +252,7 @@ class UserControllerTest extends WebTestCase
         $translatedSuccessMessage = self::getTranslatedSuccessMessage('edit', $entityName, ['Emma', 'BROWN'], $locale);
 
         self::assertSelectorNotExists("ul li:contains('$translatedSuccessMessage')");
-        static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $translatedEditText = self::getTranslatedActionText('edit', $entityName, $locale);
 
@@ -283,7 +283,7 @@ class UserControllerTest extends WebTestCase
         $notUpdatedUser = $this->getUserRepository()->findOneBy(['email' => 'valid-email@example.com']);
         self::assertNull($notUpdatedUser);
 
-        static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $entityName = self::getTranslatedEntityName($locale, 'user');
         $translatedEditText = self::getTranslatedActionText('edit', $entityName, $locale);
@@ -311,7 +311,7 @@ class UserControllerTest extends WebTestCase
         $this->submitCreateOrUpdateUserForm($client, $locale, 'Emma', 'BROWN', 'test.user@example.com');
 
         // Then the "Alper" user update fails
-        static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertSelectorExists('ul li');
         self::assertSelectorTextContains('div ul li', $expectedErrorMessage);
     }
@@ -343,7 +343,7 @@ class UserControllerTest extends WebTestCase
         $this->submitCreateOrUpdateUserForm($client, $locale, 'David', 'AKBULUT', 'alper.akbulut@alximy.io');
 
         // Then the "David" user creation fails
-        static::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         if ($locale === 'fr') {
             $expectedErrorMessage = 'La valeur "alper.akbulut@alximy.io" est déjà utilisée.';
         }

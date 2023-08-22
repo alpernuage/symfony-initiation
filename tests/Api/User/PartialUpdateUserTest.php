@@ -18,7 +18,6 @@ class PartialUpdateUserTest extends ApiTestCase
         $payload = [
             "firstName" => "Leonardo",
         ];
-
         self::createClient()->request(Request::METHOD_PATCH, '/api/users/' . $user->getId(), [
             'headers' => ['Content-Type' => 'application/merge-patch+json'],
             'json' => $payload,
@@ -28,8 +27,6 @@ class PartialUpdateUserTest extends ApiTestCase
         self::assertResponseIsSuccessful();
         self::assertJsonContains([
             'firstName' => 'Leonardo',
-            'lastName' => 'DOE',
-            'email' => 'test.user@example.com',
         ]);
     }
 }

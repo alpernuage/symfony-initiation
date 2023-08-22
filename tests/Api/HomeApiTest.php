@@ -60,7 +60,10 @@ class HomeApiTest extends ApiTestCase
             "country" => "LV",
             "currentlyOccupied" => true,
             "user" => static::getTestUser()->getId()
+
         ]);
+
+        $iri = $this->findIriBy(User::class, ['id' => static::getTestUser()->getId()]);
 
         // When we create the "75, rue Auguste Hamel Lacroix-Sur-Mer" home
         $payload = [
@@ -69,7 +72,7 @@ class HomeApiTest extends ApiTestCase
             "zipCode" => "61 868",
             "country" => "LV",
             "currentlyOccupied" => true,
-            "user" => "/api/users/" . static::getTestUser()->getId()
+            "user" => $iri
         ];
 
         $response = $this->client->request(
@@ -78,6 +81,8 @@ class HomeApiTest extends ApiTestCase
             ['json' => $payload]
         );
         $responseArray = $this->getResponseContent($response);
+//        dd($responseArray['hydra:description']);
+
         $stringToExplode = $responseArray['@id'];
         $homeId = explode("/api/home/", $stringToExplode)[1];
         $homeRepository = $this->getHomeRepository();
@@ -152,7 +157,6 @@ class HomeApiTest extends ApiTestCase
             "zipCode" => "61 868",
             "country" => "LV",
             "currentlyOccupied" => true,
-            "user" => "/api/users/" . static::getTestUser()->getId()
         ];
 
         $this->client->request(
