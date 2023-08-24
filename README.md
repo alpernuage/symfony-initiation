@@ -1,5 +1,5 @@
 # symfony-initiation
-[See for example pages](README_page_examples.md)
+[See page previews](page_previews.md)
 
 ## Requirements
 
