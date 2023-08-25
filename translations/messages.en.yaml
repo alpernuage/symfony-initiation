@@ -7,6 +7,13 @@ actions_title: Actions
 entity: Entity
 yes: Yes
 no: No
+login: Log In
+please_sign_in: Please sign in
+sign_up: Sign Up
+password: Password
+forgot_password: Forgot password
+remember_me: Remember me
+dont_have_account: Don’t have an account yet
 
 labels:
   user: User
