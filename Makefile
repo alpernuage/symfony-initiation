@@ -17,7 +17,7 @@ YELLOW := $(shell tput -Txterm setaf 3)
 BLUE := $(shell tput -Txterm setaf 4)
 ORANGE=$(shell tput setaf 172)
 LIME_YELLOW=$(shell tput setaf 190)
-RESET=$(shell tput sgr0)
+NORMAL=$(shell tput sgr0)
 BOLD=$(shell tput bold)
 REVERSE=$(shell tput smso)
 
