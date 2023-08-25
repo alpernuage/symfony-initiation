@@ -11,6 +11,14 @@
                 <a href="{{ path('user_list') }}"
                    class="text-xl font-bold items-center border-b-2 border-transparent hover:border-gray-500 transition duration-300">{{ 'labels.users'|trans }}</a>
             </li>
+            <li class="mr-6">
+                <a href="{{ path('app_login') }}"
+                   class="text-xl items-center border-b-2 border-transparent hover:border-gray-500 transition duration-300">{{ 'login'|trans }}</a>
+            </li>
+            <li class="mr-6">
+                <a href="#"
+                   class="text-xl items-center border-b-2 border-transparent hover:border-gray-500 transition duration-300">{{ 'sign_up'|trans }}</a>
+            </li>
         </ul>
 
         {% include '_layout/languages.html.twig' %}

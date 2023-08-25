@@ -7,6 +7,13 @@ actions_title: Actions
 entity: Entité
 yes: Oui
 no: Non
+login: Se connecter
+please_sign_in: Veuillez vous connecter
+sign_up: S'inscrire
+password: Mot de passe
+forgot_password: Mot de passe oublié
+remember_me: Se souvenir de moi
+dont_have_account: Vous n'avez pas encore de compte
 
 labels:
   user: Utilisateur
