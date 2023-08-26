@@ -77,6 +77,7 @@ ssl: ## Create tls certificates via mkcert library: https://github.com/FiloSotti
 .PHONY: assets
 assets: ## Install assets
 	npm install
+	npm run build
 
 ## —— 🐳 Docker ——
 .PHONY: build
