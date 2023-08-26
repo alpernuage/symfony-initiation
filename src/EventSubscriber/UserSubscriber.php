@@ -18,7 +18,7 @@ class UserSubscriber implements EventSubscriberInterface
         return [
             KernelEvents::REQUEST => 'onRequestAddRecentlyVisitedPagesFlash',
             KernelEvents::RESPONSE => 'onResponseAddCookie',
-            KernelEvents::CONTROLLER => 'onUserCreateAndUpdateAddMessageFlash',
+//            KernelEvents::CONTROLLER => 'onUserCreateAndUpdateAddMessageFlash',
         ];
     }
 

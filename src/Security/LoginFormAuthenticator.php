@@ -4,6 +4,7 @@ namespace App\Security;
 
 use App\Entity\SecurityUser;
 use App\Repository\SecurityUserRepository;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,7 +61,11 @@ class LoginFormAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        dd('failure', $exception);
+        $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+        $locale = $request->attributes->get('_locale');
+        $url = $this->router->generate('app_login', ['_locale' => $locale]);
+
+        return new RedirectResponse($url);
     }
 
 //    public function start(Request $request, AuthenticationException $authException = null): Response
