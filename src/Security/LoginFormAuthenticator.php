@@ -17,8 +17,9 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
-class LoginFormAuthenticator extends AbstractAuthenticator
+class LoginFormAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
     public function __construct(private SecurityUserRepository $securityUserRepository, private RouterInterface $router)
     {
@@ -71,14 +72,18 @@ class LoginFormAuthenticator extends AbstractAuthenticator
         return new RedirectResponse($url);
     }
 
-//    public function start(Request $request, AuthenticationException $authException = null): Response
-//    {
-//        /*
-//         * If you would like this class to control what happens when an anonymous user accesses a
-//         * protected page (e.g. redirect to /login), uncomment this method and make this class
-//         * implement Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface.
-//         *
-//         * For more details, see https://symfony.com/doc/current/security/experimental_authenticators.html#configuring-the-authentication-entry-point
-//         */
-//    }
+    public function start(Request $request, AuthenticationException $authException = null): Response
+    {
+        $locale = $request->attributes->get('_locale');
+        $url = $this->router->generate('app_login', ['_locale' => $locale]);
+
+        return new RedirectResponse($url);
+        /*
+         * If you would like this class to control what happens when an anonymous user accesses a
+         * protected page (e.g. redirect to /login), uncomment this method and make this class
+         * implement Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface.
+         *
+         * For more details, see https://symfony.com/doc/current/security/experimental_authenticators.html#configuring-the-authentication-entry-point
+         */
+    }
 }
