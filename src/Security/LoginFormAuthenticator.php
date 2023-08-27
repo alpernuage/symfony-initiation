@@ -2,7 +2,6 @@
 
 namespace App\Security;
 
-use App\Entity\SecurityUser;
 use App\Repository\SecurityUserRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -14,7 +13,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
-use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\CustomCredentials;
+use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 
 class LoginFormAuthenticator extends AbstractAuthenticator
@@ -45,9 +44,7 @@ class LoginFormAuthenticator extends AbstractAuthenticator
 
                 return $user;
             }),
-            new CustomCredentials(function ($credentials, SecurityUser $securityUser) {
-                return $credentials === 'tada';
-            }, $password)
+            new PasswordCredentials($password)
         );
     }
 
