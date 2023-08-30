@@ -6,7 +6,7 @@ EXEC = $(DOCKER_COMPOSE) exec
 PHP = $(EXEC) php
 CERTS_PATH := devops/caddy/certs/
 CONSOLE = $(PHP) bin/console
-CONTAINER_PHP = alper-initiation-php
+CONTAINER_PHP = $(COMPOSE_PROJECT_NAME)-php
 COMPOSER = $(PHP) composer
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 
