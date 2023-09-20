@@ -4,7 +4,6 @@ export
 DOCKER_COMPOSE = docker compose
 EXEC = $(DOCKER_COMPOSE) exec
 PHP = $(EXEC) php
-CERTS_PATH := devops/caddy/certs/
 CONSOLE = $(PHP) bin/console
 CONTAINER_PHP = alper-initiation-php
 COMPOSER = $(PHP) composer
@@ -48,7 +47,8 @@ vendor: .env.local
 
 .PHONY: install
 install: ## 🚀 Project installation
-install: .env.local ssl build start vendor assets
+install: .env.local build start vendor assets
+	@symfony server:start --tls
 	@echo "${BLUE}The application is available at the url: $(SERVER_NAME)$(RESET)";
 
 ## —— 🖥️ Console ——
@@ -60,18 +60,6 @@ console: ## Execute console command to accept arguments that will complete the c
 .PHONY: composer
 composer: ## Execute composer command
 	$(COMPOSER)
-
-## —— 🔐 TLS certificate ——
-.PHONY: ssl
-ssl: ## Create tls certificates via mkcert library: https://github.com/FiloSottile/mkcert
-	@if [ -d $(CERTS_PATH) ]; then \
-		echo "${YELLOW}Removing existing certificates...${RESET}"; \
-		rm -rf $(CERTS_PATH); \
-	fi
-	mkdir -p $(CERTS_PATH)
-	@echo "${REVERSE}"
-	cd $(CERTS_PATH) && mkcert $(SERVER_NAME)
-	@echo "${RESET}"
 
 ## —— Assets ——
 .PHONY: assets
