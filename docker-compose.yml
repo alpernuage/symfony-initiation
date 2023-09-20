@@ -26,7 +26,6 @@ services:
     volumes:
       - ./:/srv/app:ro
       - ./devops/caddy/Caddyfile:/etc/caddy/Caddyfile
-      - ./devops/caddy/certs:/usr/local/share/ca-certificates
     restart: unless-stopped
 
   php:

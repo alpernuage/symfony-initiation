@@ -1,5 +1,4 @@
 docker-compose.override.yml
-devops/caddy/certs/
 
 ###> symfony/framework-bundle ###
 /.env.local
