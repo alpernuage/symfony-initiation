@@ -1,6 +1,6 @@
 {
     "type": "project",
-    "name": "alper/initiation-project",
+    "name": "symfony/initiation-project",
     "description": "Initiation project to become familiar with symfony, Docker and the necessary tools",
     "license": "proprietary",
     "minimum-stability": "stable",
