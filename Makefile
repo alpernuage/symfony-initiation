@@ -3,9 +3,9 @@ export
 
 DOCKER_COMPOSE = docker compose
 EXEC = $(DOCKER_COMPOSE) exec
-PHP = $(EXEC) php
+CONTAINER_PHP = $(EXEC) php
+PHP = $(CONTAINER_PHP) php
 CONSOLE = $(PHP) bin/console
-CONTAINER_PHP = alper-initiation-php
 COMPOSER = $(PHP) composer
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 
