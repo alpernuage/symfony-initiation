@@ -14,9 +14,12 @@ This project leverages various Symfony components and extensions, including `Doc
 [See page previews](page_previews.md)
 
 ## Requirements
-
+Before you begin, make sure you have the following installed on your system:
 - [Docker](https://www.docker.com)
-- Make (already installed on most Linux distributions and macOS)
+- [Node.js](https://nodejs.org/)
+- [Composer](https://getcomposer.org/)
+- [Symfony CLI](https://symfony.com/download)
+- Make (already installed on most Linux distributions and macOS)(use WSL on Windows)
 
 ## Install
 - #### Clone the project
